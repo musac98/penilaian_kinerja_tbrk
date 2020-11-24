@@ -1,0 +1,27 @@
+.bg-gradient-primary {
+    background-color: #F0781C;
+    background-image: linear-gradient(180deg,#F0781C 10%,#CE6718 100%);
+    background-size: cover;
+}
+
+.bg-gradient-secondary {
+	background-color: #FDF700;
+	background-size: cover;
+	color: black;
+}
+
+.alert{
+	position: fixed;
+	top: 80px;
+	right: 10px;
+	width: 350px;
+}
+
+.notif_scrooll{
+	height: 150px;
+	overflow-y: auto; 
+}
+
+.tr-bold>td{
+	font-weight: bold;
+}

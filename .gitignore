@@ -1,0 +1,13 @@
+.DS_Store
+
+## vendor
+/config/mysql_mysqli.inc.php
+/vendor/
+*.lock
+
+## Sublime Text cache files
+*.tmlanguage.cache
+*.tmPreferences.cache
+*.stTheme.cache
+*.sublime-workspace
+*.sublime-project

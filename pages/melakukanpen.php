@@ -1,0 +1,316 @@
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800"> <i class="fa fa-check-square"></i> Penilaian</h1>
+</div>
+<?php
+	$ket = "Data";
+	if(isset($_GET['ket'])){
+		$ket = $_GET['ket'];
+		$form = $ket;
+		$id = $_GET['id'];
+        $sql = "SELECT a.id_penilai, a.nip, b.nama_guru, c.jabatan FROM penilai a JOIN user b ON a.nip = b.nip JOIN jenis_user c ON b.id_jenis_user = c.id_jenis_user 
+        WHERE a.id_penilai = $id";
+        $q = mysqli_query($con, $sql);
+        $row = mysqli_fetch_array($q);
+	    $nip = $row['nip'];
+        $nama_guru = $row['nama_guru'];
+        $jabatan = $row['jabatan'];
+    }
+
+?>
+<div class="row row_angket">
+	<div class="col mb-4">
+		<div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <?php
+                if(!isset($_GET['ket'])){
+                ?>
+                    <h6 class="m-0 font-weight-bold text-primary"><?= ucfirst($ket); ?> Guru yang Dinilai</h6>
+                <?php }else{ ?>
+                    <h6 class="m-0 font-weight-bold text-primary">Penilaian Kinerja</h6>
+            	<?php } ?>
+                <?php
+                if(!isset($_GET['ket'])){
+                ?>
+                <div class="dropdown no-arrow">
+                    <a href="assets/rubrik.pdf" target="blank" class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Rubrik Penilaian"><i class="fa fa-file-pdf"></i></a>
+                </div>
+                <?php } ?>
+            </div>
+            <div class="card-body">
+            <?php
+            	if(!isset($form)):
+            ?>
+            	<table class="table dataTable">
+            		<thead>
+            			<tr>
+            				<th>No</th>
+                            <th>NIP</th>
+            				<th>Nama</th>
+            				<th>Aksi</th>
+            			</tr>
+            		</thead>
+            		<tbody>
+            		<?php
+            			$i=0;
+                        $ida = $id_periode;
+                        $nip_s = $_SESSION['user'];
+                        $sql = "SELECT a.id_penilai, a.nip, c.nama_guru, b.id_penilai_detail 
+                                FROM penilai a JOIN penilai_detail b  ON a.id_penilai = b.id_penilai
+                                JOIN user c ON a.nip = c.nip WHERE b.nip = '$nip_s' AND a.id_periode = $ida ";
+            			$q = mysqli_query($con, $sql);
+            			while($row = mysqli_fetch_array($q)):
+            		?>
+            			<tr id="<?= $row['nip']; ?>" class="tr-bold">
+            				<td><?= ++$i; ?></td>
+                            <td><?= $row['nip']; ?></td>
+                            <td><?= $row['nama_guru']; ?></td>
+            				<td>
+                                <a href="index.php?p=melakukanpen&ket=tambah&id=<?= $row['id_penilai'] ?>" class="btn btn-sm btn-primary" data-toggle="tooltip" data-placement="top" title="Nilai"><i class="fa fa-pencil-alt"></i></a>
+                            </td>
+            			</tr>
+            		<?php endwhile; ?>
+            		</tbody>
+            	</table>
+                <script type="text/javascript">
+                    $(document).ready(function(){
+                        <?php
+                            $nip_user = $_SESSION['user'];
+                            $sql = "SELECT * FROM penilai a JOIN penilai_detail b ON a.id_penilai = b.id_penilai JOIN user d ON a.nip = d.nip WHERE b.nip = '$nip_user' AND a.id_periode = $id_periode AND b.id_penilai_detail NOT IN(SELECT c.id_penilai_detail FROM penilaian c WHERE c.id_penilai_detail = b.id_penilai_detail) GROUP BY a.id_penilai";
+                            $q = mysqli_query($con, $sql);
+                            while($row = mysqli_fetch_array($q)){
+                                echo "\$('#$row[nip]').removeClass('tr-bold');";
+                            }
+                        ?>
+                    });
+                </script>
+            	<?php else: ?>
+            	<form method="post" id="form_menilai" action="models/p_melakukanpen.php">
+            		<table class="table">
+                        <tr>
+                            <th width="10%">NIP</th>
+                            <td width="1%">:</td>
+                            <td><?= $nip; ?></td>
+
+                            <input type="hidden" name="nip" value="<?= $nip; ?>">
+                        </tr>      
+                        <tr>
+                            <th>Nama</th>
+                            <td>:</td>
+                            <td><?= $nama_guru; ?></td>
+                        </tr>   
+                        <tr>
+                            <th>Jabatan</th>
+                            <td>:</td>
+                            <td><?= $jabatan; ?></td>
+                        </tr>    
+                        <tr>
+                            <th>Periode</th>
+                            <td>:</td>
+                            <td><?= get_tahun_ajar(); ?></td>
+                        </tr>      
+                    </table>
+                    <?php
+                        
+                        $sql = "SELECT * FROM jenis_kompetensi";
+                        $q = mysqli_query($con, $sql);
+                    ?>
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <?php
+                            $i = 0;
+                            $data_kompetensi = [];
+                            while($row = mysqli_fetch_array($q)):
+                                $data_kompetensi[$i]['id_kompetensi'] = $row['id_kompetensi'];
+                                $data_kompetensi[$i]['nama_kompetensi'] = $row['nama_kompetensi'];
+                                $data_kompetensi[$i]['bobot_kompetensi'] = $row['bobot_kompetensi'];
+                        ?>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link <?= $i==0?'active':''?>" id="kom_<?= $row['id_kompetensi']; ?>-tab" data-toggle="tab" href="#kom_<?= $row['id_kompetensi']; ?>" role="tab" aria-controls="<?= $row['nama_kompetensi']; ?>" aria-selected="true">
+                                <?= $row['nama_kompetensi']; ?>
+                            </a>
+                        </li>
+                        <?php $i++; endwhile; ?>
+                    </ul>
+                    <div class="tab-content" id="myTabContent">
+                        <?php
+                            foreach ($data_kompetensi as $k => $v):
+                        ?>
+                        <div class="tab-pane fade <?= $k==0?"show active":''; ?>" id="kom_<?= $v['id_kompetensi'];?>" role="tabpanel" aria-labelledby="<?= $v['nama_kompetensi'];?>-tab">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th rowspan="2">No</th>
+                                        <th rowspan="2">Isi Kompetensi</th>
+                                        <th colspan="5">Nilai</th>
+                                    </tr>
+                                    <tr>
+                                        <th>1</th>
+                                        <th>2</th>
+                                        <th>3</th>
+                                        <th>4</th>
+                                        <th>5</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                <?php
+                                    $i = 0;
+                                    switch ($_SESSION['type']) {
+                                        case '1':
+                                            $wh = "AND ket LIKE '%1%' ";
+                                            break;
+                                        case '2':
+                                            $wh = "AND ket LIKE '%0%' ";
+                                            break;
+                                        case '3':
+                                            $wh = "AND ket LIKE '%0%' ";
+                                            break;
+                                        case '4':
+                                            $wh = "AND ket LIKE '%2%' ";
+                                            break;
+                                        
+                                        default:
+                                            $wh = "";
+                                            break;
+                                    }
+                                    $sql = "SELECT * FROM isi_kompetensi WHERE id_kompetensi = $v[id_kompetensi] $wh";
+                                    $q = mysqli_query($con, $sql);
+                                    while($row = mysqli_fetch_array($q)):
+                                ?>
+                                    <tr>
+                                        <td><?= ++$i; ?></td>
+                                        <td><?= $row['isi_kompetensi']; ?></td>
+                                        <td><input class="rb_nilai" type="radio" id="isi_kompetensi_<?= $row['id_isi'];?>_1" name="isi_kompetensi_<?= $row['id_isi'];?>" value="1" required ></td>
+                                        <td><input class="rb_nilai" type="radio" id="isi_kompetensi_<?= $row['id_isi'];?>_2" name="isi_kompetensi_<?= $row['id_isi'];?>" value="2" required ></td>
+                                        <td><input class="rb_nilai" type="radio" id="isi_kompetensi_<?= $row['id_isi'];?>_3" name="isi_kompetensi_<?= $row['id_isi'];?>" value="3" required ></td>
+                                        <td><input class="rb_nilai" type="radio" id="isi_kompetensi_<?= $row['id_isi'];?>_4" name="isi_kompetensi_<?= $row['id_isi'];?>" value="4" required ></td>
+                                        <td><input class="rb_nilai" type="radio" id="isi_kompetensi_<?= $row['id_isi'];?>_5" name="isi_kompetensi_<?= $row['id_isi'];?>" value="5" required ></td>
+                                    </tr>
+                                <?php endwhile; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-sm-10">
+                            <input type="submit" class="btn btn-primary" name="btnSimpan" value="<?= ucfirst($form); ?>">
+                        </div>
+                    </div>
+				</form>
+                <script type="text/javascript">
+                    $(document).ready(function(){
+                        <?php
+                            $nip_user = $_SESSION['user'];
+                            $id_periode = get_tahun_ajar_id();;
+
+                            $sql = "SELECT * FROM penilaian a
+                                    JOIN penilai_detail b ON a.id_penilai_detail = b.id_penilai_detail
+                                    JOIN penilai c ON b.id_penilai = c.id_penilai
+                                    WHERE b.nip = '$nip_user' AND c.nip = '$nip' AND c.id_periode = $id_periode";
+                            $q = mysqli_query($con, $sql);
+                            //echo $sql;
+                            while($row = mysqli_fetch_array($q)){
+                                echo "\$('#isi_kompetensi_$row[id_isi]_$row[hasil_nilai]').attr('checked', true);";
+                            }   
+                        ?>
+                    });
+                </script>   
+            	<?php endif; ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalDetail" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Detail Data User</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body load-modal">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="hapusModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Anda yakin ingin menghapus data?</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Batal</button>
+                <a class="btn btn-success btnhapus-link" href="login.html">Hapus</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $(".btn-detail").click(function(){
+            var id = $(this).attr("data-id");
+            $('#modalDetail').modal('show');
+            $(".load-modal").load('models/ajax_user.php?nip='+id);
+        });
+        $(".btn-hapus").click(function(){
+            var id = $(this).attr("data-id");
+            $('#hapusModal').modal('show');
+            $(".btnhapus-link").attr("href", "models/p_user.php?id="+id);
+            //$(".load-modal").load('models/ajax_user.php?nip='+id);
+        });
+        var inv_id = 0;
+        var valid_tab = [];
+
+
+        $('input[type="submit"]').on('click', function() {
+            console.log("before");
+            inv_id = 0;
+        });
+
+        $("#form_menilai input").on("invalid", function(){
+            var invalid_input = $(this).closest('.tab-pane').index();
+            var all_tabs = $('.tab-pane');
+            var tabs_id = all_tabs[invalid_input].id;
+            var id = tabs_id.split("_")[1];
+            if(inv_id==0){
+                inv_id = id;
+            }
+            if(inv_id==id){
+                $(".nav-link").each(function(){
+                    $(this).removeClass('active');
+                });
+                $(".tab-pane").each(function(){
+                    $(this).removeClass('active');
+                    $(this).removeClass('show');
+                });
+                $("#kom_"+inv_id+"-tab").addClass("active");
+                $("#kom_"+inv_id).addClass("active");
+                $("#kom_"+inv_id).addClass("show");
+                //inv_id=0;
+                return true;
+            }else{
+                return false;
+            }
+        });
+
+        function showTabWithInvalidInput(currentTab, invalidTab) {
+            $('#'+currentTab).removeClass('active');
+            $('#'+invalidTab).addClass('active');
+            $('#'+invalidTab).addClass('show');
+        }
+    });
+</script>
