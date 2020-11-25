@@ -40,11 +40,11 @@
             	<table class="table dataTable">
             		<thead>
             			<tr>
-            				<th>No</th>
-            				<th>Kriteria</th>
-            				<th>Sub Kriteria</th>
-                            <th>Bobot</th>
-            				<th>Aksi</th>
+            				<th width="5%">No</th>
+            				<th width="10%">Kriteria</th>
+            				<th width="40%">Sub Kriteria</th>
+                            <th width="10%">Bobot</th>
+            				<th width="10%">Aksi</th>
             			</tr>
             		</thead>
             		<tbody>

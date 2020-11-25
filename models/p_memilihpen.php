@@ -3,76 +3,71 @@
 require_once("../config/koneksi.php");
 
 if(isset($_POST['btnSimpan'])){
-	$nip = isset($_POST['id_guru_dinilai'])?$con->real_escape_string($_POST['id_guru_dinilai']):'';
-	$guru_penilai = [];
-	for($i = 1; $i <= get_jml_penilai_guru(); $i++){
-		$guru_penilai[] = isset($_POST['id_guru_penilai_'.$i])?$con->real_escape_string($_POST['id_guru_penilai_'.$i]):'';;
-	}
-	$siswa_penilai = [];
-	for($i = 1; $i <= get_jml_penilai_siswa(); $i++){
-		$siswa_penilai[] = isset($_POST['id_siswa_penilai_'.$i])?$con->real_escape_string($_POST['id_siswa_penilai_'.$i]):'';;
-	}
-	$msg = '';
-	mysqli_autocommit($con,FALSE);
-	if($_POST['btnSimpan']=="Tambah"){
-		$idp = get_tahun_ajar_id();
-		$sql = "INSERT INTO penilai (nip, id_periode) VALUES ('$nip', $idp)";
-		$q = mysqli_query($con, $sql);
-		$id = mysqli_insert_id($con);
-	}else if($_POST['btnSimpan']=="Ubah"){
-		$msg .= "Ubah";
-		$id = $_POST['id_penilai'];
-		$sql = "SELECT * FROM penilai_detail WHERE id_penilai = $id";
-		$q = mysqli_query($con, $sql);
-		$_nip = [];
-		while($row = mysqli_fetch_array($q)){
-		 	$_nip[] = $row['id_penilai_detail'];
-		}
-		$sql = "DELETE FROM penilai_detail WHERE id_penilai_detail IN (".join(",",$_nip).")";
-		$q = mysqli_query($con, $sql);
-	}
-	$proses = [];
-	if($q){
-		mysqli_commit($con);
-		$sql = "SELECT * FROM user a JOIN jenis_user b ON a.id_jenis_user = b.id_jenis_user WHERE b.level IN(2,3) ";
-		$q = mysqli_query($con, $sql);
-		$atasan = [];
-		while($row = mysqli_fetch_array($q)){
-			$atasan[] = $row['nip'];
-		}
-		/*--- Diri Sendiri ----*/
-		$sql = "INSERT INTO penilai_detail (id_penilai, nip) VALUES ($id, '$nip')"; 	
-		if($q = mysqli_query($con, $sql)){
-			$proses[] = 1;
+	echo "<pre>";
+	print_r($_POST);
+	echo "</pre>";
+ 
+	if( sizeof($_POST['group_1']) != sizeof($_POST['group_2']) ){
+		$_SESSION["flash"]["type"] = "danger";
+		$_SESSION["flash"]["head"] = "Terjadi Kesalahan";
+		$_SESSION["flash"]["msg"] = "Data gagal disimpan!";
+		header("location:../index.php?p=memilihpen&ket=Tambah");
+	}else{
+		/// insert
+		if(!isset($_POST['penilai_1'])){
+			$idp = get_tahun_ajar_id();
+			$id_kar = isset($_POST['id_kar'])?$con->real_escape_string($_POST['id_kar']):'';
+			$toko = isset($_POST['toko'])?$con->real_escape_string($_POST['toko']):'';
+			for($i=1; $i<=2; $i++){
+				$grup = "grup$toko$idp$i";
+				$sql = "SELECT * FROM penilai WHERE grup = '$grup' ";
+				$q = mysqli_query($con, $sql);
+				if(mysqli_fetch_array($q)>0){
+					$_SESSION["flash"]["type"] = "warning";
+					$_SESSION["flash"]["head"] = "Sukses";
+					$_SESSION["flash"]["msg"] = "Data sudah ada!";
+					header("location:../index.php?p=memilihpen");
+					exit();
+				}else{
+					mysqli_autocommit($con,FALSE);
+					$sql = "INSERT INTO penilai (id_toko, id_periode, grup) VALUES ($toko, $idp, '$grup')";
+					$proses[] = mysqli_query($con, $sql)?1:0;
+					$id_penilai = mysqli_insert_id($con);
+					foreach ($_POST["group_$i"] as $k => $v) {
+						$sql = "INSERT INTO grup_dinilai (id_penilai, id_kar) VALUES ($id_penilai, '$v')";	
+						$proses[] = mysqli_query($con, $sql)?1:0;
+					}
+					$owner = get_owener();
+					$sql = "INSERT penilai_detail (id_penilai, id_kar) VALUES($id_penilai, '$id_kar'), ($id_penilai, '$owner')";
+					$proses[] = mysqli_query($con, $sql)?1:0;
+				}
+			}
 		}else{
-			$proses[] = 0;
-			$msg .= mysqli_error($con);
-		}
+		/// ubah
+			$id_penilai[] = $_POST['penilai_1'];
+			$id_penilai[] = $_POST['penilai_2'];
+			$group_1 = $_POST['group_1'];
+			$group_2 = $_POST['group_2'];
 
-		foreach ($atasan as $k => $v) {
-			$sql = "INSERT INTO penilai_detail (id_penilai, nip) VALUES ($id, '$v')"; 	
-			if($q = mysqli_query($con, $sql)){
-				$proses[] = 1;
-			}else{
-				$proses[] = 0;
-			}
-		}
+			$id_kar = isset($_POST['id_kar'])?$con->real_escape_string($_POST['id_kar']):'';
 
-		foreach ($guru_penilai as $k => $v) {
-			$sql = "INSERT INTO penilai_detail (id_penilai, nip) VALUES ($id, '$v')"; 	
-			if($q = mysqli_query($con, $sql)){
-				$proses[] = 1;
-			}else{
-				$proses[] = 0;
+			mysqli_autocommit($con,FALSE);
+			foreach ($id_penilai as $k => $v) {
+				$i = $k + 1;
+				$idpd = $_POST['penilai_detail_'.$i];
+				$sql = "UPDATE penilai_detail SET id_kar = '$id_kar' WHERE id_penilai_detail = $idpd";
+				$proses[] = mysqli_query($con, $sql)?1:0;
+
+				$sql = "DELETE FROM grup_dinilai WHERE id_penilai = $v";
+				$proses[] = mysqli_query($con, $sql)?1:0;
+
+				foreach ($_POST["group_$i"] as $ka => $va) {
+					$sql = "INSERT INTO grup_dinilai (id_penilai, id_kar) VALUES ($v, '$va')";	
+					$proses[] = mysqli_query($con, $sql)?1:0;
+				}
 			}
-		}
-		foreach ($siswa_penilai as $k => $v) {
-			$sql = "INSERT INTO penilai_detail (id_penilai, nip) VALUES ($id, '$v')"; 
-			if($q = mysqli_query($con, $sql)){
-				$proses[] = 1;
-			}else{
-				$proses[] = 0;
-			}
+
+
 		}
 		if(!in_array(0, $proses)){
 			mysqli_commit($con);
@@ -83,22 +78,17 @@ if(isset($_POST['btnSimpan'])){
 			mysqli_rollback($con);
 			$_SESSION["flash"]["type"] = "danger";
 			$_SESSION["flash"]["head"] = "Terjadi Kesalahan";
-			$_SESSION["flash"]["msg"] = "Data gagal disimpan! <br>$msg";
+			$_SESSION["flash"]["msg"] = "Data gagal disimpan!";
 		}
-	}else{
-		mysqli_rollback($con);
-		$_SESSION["flash"]["type"] = "danger";
-		$_SESSION["flash"]["head"] = "Terjadi Kesalahan";
-		$_SESSION["flash"]["msg"] = "Data gagal disimpan! <br>$msg";
+		header("location:../index.php?p=memilihpen");
 	}
-	
-	header("location:../index.php?p=memilihpen");
 
 }
 
 if(isset($_GET['id'])){
-	$nip = isset($_GET['id'])?$con->real_escape_string($_GET['id']):'';
-	$sql = "DELETE FROM penilai WHERE id_penilai = '$nip'";
+	$id = isset($_GET['id'])?$con->real_escape_string($_GET['id']):'';
+	$idper = get_tahun_ajar_id();
+	$sql = "DELETE FROM penilai WHERE id_toko = $id AND id_periode = $idper";
 
 	$proses = mysqli_query($con, $sql);
 	if($proses){

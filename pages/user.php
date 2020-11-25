@@ -9,7 +9,7 @@
 		$form = $ket;
 		if($ket == "ubah"){
 			$id = $_GET['id'];
-			$sql = "SELECT * FROM karyawan";
+			$sql = "SELECT * FROM karyawan WHERE id_kar = '$id' ";
 			$q = mysqli_query($con, $sql);
 			$row = mysqli_fetch_array($q);
 			$id_kar = $row['id_kar'];

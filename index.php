@@ -1,5 +1,6 @@
 <?php
     require_once("config/koneksi.php");
+
     if(!isset($_SESSION['user']) && $_SESSION['user']==""){
         header("location:login.php");
     }
@@ -88,8 +89,8 @@
             <div class="sidebar-heading" style="color: black;">
                 Penilaian
             </div>
-            <li class="nav-item" id="melakukanpen">
-                <a class="nav-link" href="index.php?p=memilihpen2" style="color: black">
+            <li class="nav-item" id="memilihpen">
+                <a class="nav-link" href="index.php?p=memilihpen" style="color: black">
                     <i class="fas fa-fw fa-check-square" style="color: black"></i>
                     <span>Memilih Penilai</span>
                 </a>

@@ -8,13 +8,14 @@
 		$ket = $_GET['ket'];
 		$form = $ket;
 		$id = $_GET['id'];
-        $sql = "SELECT a.id_penilai, a.nip, b.nama_guru, c.jabatan FROM penilai a JOIN user b ON a.nip = b.nip JOIN jenis_user c ON b.id_jenis_user = c.id_jenis_user 
-        WHERE a.id_penilai = $id";
+        $sql = "SELECT *
+                FROM penilai a
+                JOIN toko b ON a.id_toko = b.id_toko
+                WHERE a.id_penilai = $id ";
         $q = mysqli_query($con, $sql);
         $row = mysqli_fetch_array($q);
-	    $nip = $row['nip'];
-        $nama_guru = $row['nama_guru'];
-        $jabatan = $row['jabatan'];
+	    $karyawan = get_dinilai($con, $row['id_penilai']);
+        $toko = $row['lokasi'];
     }
 
 ?>
@@ -45,26 +46,30 @@
             		<thead>
             			<tr>
             				<th>No</th>
-                            <th>NIP</th>
-            				<th>Nama</th>
+                            <th>Toko</th>
+            				<th>Karyawan Dinilai</th>
             				<th>Aksi</th>
             			</tr>
             		</thead>
             		<tbody>
             		<?php
+
+
             			$i=0;
-                        $ida = $id_periode;
-                        $nip_s = $_SESSION['user'];
-                        $sql = "SELECT a.id_penilai, a.nip, c.nama_guru, b.id_penilai_detail 
-                                FROM penilai a JOIN penilai_detail b  ON a.id_penilai = b.id_penilai
-                                JOIN user c ON a.nip = c.nip WHERE b.nip = '$nip_s' AND a.id_periode = $ida ";
+                        $ida = get_tahun_ajar_id();
+                        $id_kar = $_SESSION['user'];
+                        $sql = "SELECT *
+                                FROM penilai a
+                                JOIN toko b ON a.id_toko = b.id_toko
+                                JOIN penilai_detail c ON a.id_penilai = c.id_penilai
+                                WHERE a.id_periode = $ida AND c.id_kar = '$id_kar' ";
             			$q = mysqli_query($con, $sql);
             			while($row = mysqli_fetch_array($q)):
             		?>
-            			<tr id="<?= $row['nip']; ?>" class="tr-bold">
+            			<tr id="<?= $row['id_kar']; ?>" class="tr-bold">
             				<td><?= ++$i; ?></td>
-                            <td><?= $row['nip']; ?></td>
-                            <td><?= $row['nama_guru']; ?></td>
+                            <td><?= $row['lokasi']; ?></td>
+                            <td><?= get_dinilai($con, $row['id_penilai']); ?></td>
             				<td>
                                 <a href="index.php?p=melakukanpen&ket=tambah&id=<?= $row['id_penilai'] ?>" class="btn btn-sm btn-primary" data-toggle="tooltip" data-placement="top" title="Nilai"><i class="fa fa-pencil-alt"></i></a>
                             </td>
@@ -75,12 +80,12 @@
                 <script type="text/javascript">
                     $(document).ready(function(){
                         <?php
-                            $nip_user = $_SESSION['user'];
+                            /*$nip_user = $_SESSION['user'];
                             $sql = "SELECT * FROM penilai a JOIN penilai_detail b ON a.id_penilai = b.id_penilai JOIN user d ON a.nip = d.nip WHERE b.nip = '$nip_user' AND a.id_periode = $id_periode AND b.id_penilai_detail NOT IN(SELECT c.id_penilai_detail FROM penilaian c WHERE c.id_penilai_detail = b.id_penilai_detail) GROUP BY a.id_penilai";
                             $q = mysqli_query($con, $sql);
                             while($row = mysqli_fetch_array($q)){
                                 echo "\$('#$row[nip]').removeClass('tr-bold');";
-                            }
+                            }*/
                         ?>
                     });
                 </script>
@@ -88,22 +93,17 @@
             	<form method="post" id="form_menilai" action="models/p_melakukanpen.php">
             		<table class="table">
                         <tr>
-                            <th width="10%">NIP</th>
+                            <th width="10%">Karyawan</th>
                             <td width="1%">:</td>
-                            <td><?= $nip; ?></td>
+                            <td><?= $karyawan; ?></td>
 
                             <input type="hidden" name="nip" value="<?= $nip; ?>">
-                        </tr>      
-                        <tr>
-                            <th>Nama</th>
-                            <td>:</td>
-                            <td><?= $nama_guru; ?></td>
                         </tr>   
                         <tr>
-                            <th>Jabatan</th>
+                            <th>Toko</th>
                             <td>:</td>
-                            <td><?= $jabatan; ?></td>
-                        </tr>    
+                            <td><?= $toko; ?></td>
+                        </tr> 
                         <tr>
                             <th>Periode</th>
                             <td>:</td>
@@ -112,7 +112,7 @@
                     </table>
                     <?php
                         
-                        $sql = "SELECT * FROM jenis_kompetensi";
+                        $sql = "SELECT * FROM data_penilaian_kinerja GROUP BY kriteria";
                         $q = mysqli_query($con, $sql);
                     ?>
                     <ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -120,13 +120,12 @@
                             $i = 0;
                             $data_kompetensi = [];
                             while($row = mysqli_fetch_array($q)):
-                                $data_kompetensi[$i]['id_kompetensi'] = $row['id_kompetensi'];
-                                $data_kompetensi[$i]['nama_kompetensi'] = $row['nama_kompetensi'];
-                                $data_kompetensi[$i]['bobot_kompetensi'] = $row['bobot_kompetensi'];
+                                $data_kompetensi[$i]['id_kriteria'] = $row['id_kriteria'];
+                                $data_kompetensi[$i]['kriteria'] = $row['kriteria'];
                         ?>
                         <li class="nav-item" role="presentation">
-                            <a class="nav-link <?= $i==0?'active':''?>" id="kom_<?= $row['id_kompetensi']; ?>-tab" data-toggle="tab" href="#kom_<?= $row['id_kompetensi']; ?>" role="tab" aria-controls="<?= $row['nama_kompetensi']; ?>" aria-selected="true">
-                                <?= $row['nama_kompetensi']; ?>
+                            <a class="nav-link <?= $i==0?'active':''?>" id="kom_<?= $row['id_kriteria']; ?>-tab" data-toggle="tab" href="#kom_<?= $row['id_kriteria']; ?>" role="tab" aria-controls="<?= $row['nama_kompetensi']; ?>" aria-selected="true">
+                                <?= $row['kriteria']; ?>
                             </a>
                         </li>
                         <?php $i++; endwhile; ?>
@@ -135,7 +134,7 @@
                         <?php
                             foreach ($data_kompetensi as $k => $v):
                         ?>
-                        <div class="tab-pane fade <?= $k==0?"show active":''; ?>" id="kom_<?= $v['id_kompetensi'];?>" role="tabpanel" aria-labelledby="<?= $v['nama_kompetensi'];?>-tab">
+                        <div class="tab-pane fade <?= $k==0?"show active":''; ?>" id="kom_<?= $v['id_kriteria'];?>" role="tabpanel" aria-labelledby="<?= $v['kriteria'];?>-tab">
                             <table class="table">
                                 <thead>
                                     <tr>
@@ -154,31 +153,14 @@
                                 <tbody>
                                 <?php
                                     $i = 0;
-                                    switch ($_SESSION['type']) {
-                                        case '1':
-                                            $wh = "AND ket LIKE '%1%' ";
-                                            break;
-                                        case '2':
-                                            $wh = "AND ket LIKE '%0%' ";
-                                            break;
-                                        case '3':
-                                            $wh = "AND ket LIKE '%0%' ";
-                                            break;
-                                        case '4':
-                                            $wh = "AND ket LIKE '%2%' ";
-                                            break;
-                                        
-                                        default:
-                                            $wh = "";
-                                            break;
-                                    }
-                                    $sql = "SELECT * FROM isi_kompetensi WHERE id_kompetensi = $v[id_kompetensi] $wh";
+                                    $kriteria = $v['kriteria'];
+                                    $sql = "SELECT * FROM data_penilaian_kinerja WHERE kriteria = '$kriteria' ";
                                     $q = mysqli_query($con, $sql);
                                     while($row = mysqli_fetch_array($q)):
                                 ?>
                                     <tr>
                                         <td><?= ++$i; ?></td>
-                                        <td><?= $row['isi_kompetensi']; ?></td>
+                                        <td><?= $row['sub_kriteria']; ?></td>
                                         <td><input class="rb_nilai" type="radio" id="isi_kompetensi_<?= $row['id_isi'];?>_1" name="isi_kompetensi_<?= $row['id_isi'];?>" value="1" required ></td>
                                         <td><input class="rb_nilai" type="radio" id="isi_kompetensi_<?= $row['id_isi'];?>_2" name="isi_kompetensi_<?= $row['id_isi'];?>" value="2" required ></td>
                                         <td><input class="rb_nilai" type="radio" id="isi_kompetensi_<?= $row['id_isi'];?>_3" name="isi_kompetensi_<?= $row['id_isi'];?>" value="3" required ></td>

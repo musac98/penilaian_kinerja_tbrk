@@ -33,6 +33,17 @@
 	}
 
 
+
+	function get_owener()
+	{
+		$con = $GLOBALS['con'];
+		$sql = "SELECT * FROM karyawan a JOIN jabatan b ON a.id_jabatan = b.id_jabatan WHERE level = 2";
+		$q = mysqli_query($con, $sql);
+		$row = mysqli_fetch_array($q);
+		return $row['id_kar'];
+	}
+
+
 	function get_tahun_ajar_id()
 	{
 		$con = $GLOBALS['con'];
@@ -266,4 +277,24 @@
 			return "#".$nc;
 		}
 	}
+
+
+	function get_dinilai($con, $idp){
+        $sql = "SELECT * FROM grup_dinilai a JOIN karyawan b ON a.id_kar = b.id_kar WHERE a.id_penilai = $idp";
+        $q = mysqli_query($con, $sql);
+        $txt = '';
+        while($row = mysqli_fetch_array($q)){
+            $txt .= "- $row[nama]<br>";
+        }
+        return $txt;
+    }
+    function get_penilai($con, $idp){
+        $sql = "SELECT * FROM penilai_detail a JOIN karyawan b ON a.id_kar = b.id_kar WHERE a.id_penilai = $idp";
+        $q = mysqli_query($con, $sql);
+        $txt = '';
+        while($row = mysqli_fetch_array($q)){
+            $txt .= "- $row[nama]<br>";
+        }
+        return $txt;
+    }
 ?>
