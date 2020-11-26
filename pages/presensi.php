@@ -50,23 +50,31 @@
                         while ($row = mysqli_fetch_array($p)) {
                             $idtk = $row['id_toko'];
                         }
-            			$sql = "SELECT * FROM karyawan k JOIN presensi p ON k.id_kar = p.id_kar 
-                        WHERE k.id_toko = '$idtk'";
+            			$sql = "SELECT *,
+                                    k.id_kar AS idk FROM karyawan k 
+                                JOIN jabatan j ON k.id_jabatan  = j.id_jabatan
+                                LEFT JOIN presensi p ON k.id_kar = p.id_kar 
+                                WHERE k.id_toko = $idtk AND j.level = 4";
             			$q = mysqli_query($con, $sql);
             			while($row = mysqli_fetch_array($q)):
+                            
+                            $id_pres = $row['id_pres']==null?"kar_".$row['idk']:$row['id_pres']; 
+                            $jml_masuk = $row['jml_masuk']==null?'0':$row['jml_masuk']; 
             		?>
             			<tr>
             				<td><?= ++$i; ?></td>
                             <td><?= $row['nama']; ?></td>
-                            <td><?= $row['jml_masuk']; ?></td>
+                            <td><?= $jml_masuk; ?></td>
             				<td>
-                                <button type="button" class="btn btn-sm btn-secondary btn-detail" data-id="<?= $row['id_pres'] ?>" data-toggle="tooltip" data-placement="top" title="Detail">
+                                <button type="button" class="btn btn-sm btn-secondary btn-detail" data-id="<?= $row['idk'] ?>" data-toggle="tooltip" data-placement="top" title="Detail">
                                     <i class="fa fa-eye"></i>
                                 </button>
-                                <button type="button" class="btn btn-sm btn-success btn-tambah" data-jml="<?= $row['jml_masuk'] ?>" data-id="<?= $row['id_pres'] ?>" data-toggle="tooltip" data-placement="top" title="Tambah">
+                                <button type="button" class="btn btn-sm btn-success btn-tambah" data-jml="<?= $jml_masuk ?>" data-id="<?= $id_pres ?>" data-toggle="tooltip" data-placement="top" title="Tambah">
                                     <i class="fa fa-plus"></i>
                                 </button>
-                                <a href="index.php?p=presensi&ket=ubah&id=<?= $row['id_pres'] ?>" class="btn btn-sm btn-primary" data-toggle="tooltip" data-placement="top" title="Ubah Data"><i class="fa fa-pencil-alt"></i></a>
+                                <?php if(substr($id_pres, 0, 3) != "kar"): ?>
+                                <a href="index.php?p=presensi&ket=ubah&id=<?= $id_pres ?>" class="btn btn-sm btn-primary" data-toggle="tooltip" data-placement="top" title="Ubah Data"><i class="fa fa-pencil-alt"></i></a>
+                                <?php endif; ?>
                             </td>
             			</tr>
             		<?php endwhile; ?>
@@ -162,7 +170,9 @@
             var id = $(this).attr("data-id");
             var jml = $(this).attr("data-jml");
             $('#modalTambah').modal('show');
-            $(".btntambah-link").attr("href", "models/p_presensi.php?id_pres="+id+"&jml_masuk="+jml);
+            var url = "models/p_presensi.php?id_pres="+id+"&jml_masuk="+jml;
+            console.log(url);
+            $(".btntambah-link").attr("href", url);
         });
     });
 </script>

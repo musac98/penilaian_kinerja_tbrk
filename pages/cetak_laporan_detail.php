@@ -2,13 +2,17 @@
     require_once("../config/koneksi.php");
     if(isset($_GET['detail'])){
         $id = $_GET['detail'];
-        $sql = "SELECT a.id_penilai, a.nip, b.nama_guru, c.jabatan FROM penilai a JOIN user b ON a.nip = b.nip JOIN jenis_user c ON b.id_jenis_user = c.id_jenis_user 
-        WHERE a.nip = $id";
+        $id_periode = $_GET['idp'];
+        $sql = "SELECT *
+                FROM penilai a
+                JOIN toko b ON a.id_toko = b.id_toko
+                JOIN penilai_detail c ON a.id_penilai = c.id_penilai
+                WHERE a.id_penilai = $id AND a.id_periode = $id_periode ";
         $q = mysqli_query($con, $sql);
         $row = mysqli_fetch_array($q);
-        $nip = $row['nip'];
-        $nama_guru = $row['nama_guru'];
-        $jabatan = $row['jabatan'];
+        $karyawan = get_dinilai($con, $row['id_penilai']);
+        $toko = $row['lokasi'];
+        $id_penilai_detail = $row['id_penilai_detail'];
     }
 
 ?>
@@ -21,7 +25,7 @@
     <meta name="description" content="Penilaian Kinerja Guru 360 SMA GRACIA Surabaya">
     <meta name="author" content="Musa">
     <link rel="shortcut icon" href="../assets/img/logo.png">
-    <title>SMA GRACIA | Cetak Laporan Penilaian Kinerja Guru 360</title>
+    <title>TBRK Roastery | Penilaian Kinerja Karyawan</title>
 
     <!-- Custom fonts for this template-->
     <link href="../assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -83,9 +87,9 @@
                 <img src="../assets/img/logo.png" alt="Logo" width="100%">
             </div>
             <div class="col-sm cop">
-                <h4>Laporan Penilaian Kinerja Guru Tahun Ajar <?= get_tahun_ajar(); ?></h4>
-                <h3><strong>SMA GRACIA Surabaya</strong></h3>
-                <p>Jl. Gubeng Pojok No.15, Ketabang, Kec. Genteng, Kota Surabaya, Jawa Timur</p>
+                <h4>Laporan Penilaian Kinerja Periode <?= get_tahun_ajar(); ?></h4>
+                <h3><strong>TBRK Roastery</strong></h3>
+                <!-- <p>Jl. Gubeng Pojok No.15, Ketabang, Kec. Genteng, Kota Surabaya, Jawa Timur</p> -->
             </div>
             <div class="col-1">
             </div>
@@ -101,23 +105,22 @@
         ?>
         <p class="per">Periode : <?= $nama_periode; ?></p>
         
+        
         <table class="table">
             <tr>
-                <th width="10%">NIP</th>
+                <th width="10%">Karyawan</th>
                 <td width="1%">:</td>
-                <td><?= $nip; ?></td>
-
-                <input type="hidden" name="nip" value="<?= $nip; ?>">
-            </tr>      
-            <tr>
-                <th>Nama</th>
-                <td>:</td>
-                <td><?= $nama_guru; ?></td>
+                <td><?= $karyawan; ?></td>
             </tr>   
             <tr>
-                <th>Jabatan</th>
+                <th>Toko</th>
                 <td>:</td>
-                <td><?= $jabatan; ?></td>
+                <td><?= $toko; ?></td>
+            </tr> 
+            <tr>
+                <th>Periode</th>
+                <td>:</td>
+                <td><?= get_tahun_ajar($id_periode); ?></td>
             </tr>      
         </table>
         <hr>
@@ -125,68 +128,51 @@
         
         <table class="table">
             <thead>
-                <?php
-                    $sumif = "";
-                    $sql = "SELECT * FROM jenis_kompetensi";
-                    $q = mysqli_query($con, $sql);
-                    $nr = mysqli_num_rows($q);
-                    
-                ?>
                 <tr>
-                    <th rowspan="2">No</th>
-                    <th rowspan="2">NIP</th>
-                    <th rowspan="2">Nama</th>
-                    <th rowspan="2">Jabatan</th>
-                    <th colspan="<?= $nr; ?>" class="text-center">Kompetensi</th>
-                </tr>
-                <tr>
-                <?php
-                    $i = 0;
-                    $komp = [];
-                    while($row = mysqli_fetch_array($q)){
-                        echo "<th class='text-center'>$row[nama_kompetensi]</th>";
-                        $komp[] = $row;
-                        $tbh = ($i==0)?'':", ";
-                        $sumif .= $tbh."SUM(IF(d.id_kompetensi = $row[id_kompetensi], a.hasil_nilai, 0)) AS '$row[nama_kompetensi]' ";
-                        $i++;
-                    }
-                ?>
+                    <th>No</th>
+                    <th>Nama</th>
+                    <th>Jabatan</th>
+                    <th>Kriteria</th>
+                    <th>Sub Kriteria</th>
+                    <th>Nilai</th>
                 </tr>
             </thead>
             <tbody>
             <?php
                 $i = 0;
-                $sql = "SELECT
-                            c.nip AS 'dinilai',
-                            b.nip,
-                            e.nama_guru,
-                            f.jabatan,
-                            $sumif
-                        FROM penilai_detail b
-                        JOIN penilai c ON b.id_penilai = c.id_penilai
-                        JOIN user e ON b.nip = e.nip
-                        JOIN jenis_user f ON e.id_jenis_user = f.id_jenis_user
-                        JOIN penilaian a ON a.id_penilai_detail = b.id_penilai_detail
-                        JOIN isi_kompetensi d ON a.id_isi = d.id_isi
-                        WHERE c.nip = '$nip' AND id_periode = $id_periode
-                        GROUP BY c.nip, b.nip
-                        ORDER BY f.level";
+
+                $sql = "SELECT * FROM penilai_detail a JOIN penilai b ON a.id_penilai = b.id_penilai
+                        JOIN karyawan c ON a.id_kar = c.id_kar
+                        JOIN jabatan d ON c.id_jabatan = d.id_jabatan
+                        JOIN toko e ON b.id_toko = e.id_toko
+                        WHERE b.id_penilai = $id
+                        ORDER BY e.id_toko, c.nama
+                         ";  
+
                 $q = mysqli_query($con, $sql);
                 while($row = mysqli_fetch_array($q)):
-                    $jbt = $row['dinilai'] == $row['nip']?"Diri Sendiri":$row['jabatan'];
+                    $sql2 = "SELECT
+                        *
+                        FROM penilaian a
+                        JOIN data_penilaian_kinerja c ON a.id_kriteria = c.id_kriteria
+                        WHERE a.id_penilai_detail = $row[id_penilai_detail] ";
+                    $q2 = mysqli_query($con, $sql2);
+                    $nr = mysqli_num_rows($q2);
             ?>
                 <tr>
-                    <td><?= ++$i; ?></td>
-                    <td><?= $row['nip']; ?></td>
-                    <td><?= $row['nama_guru']; ?></td>
-                    <td><?= $jbt; ?></td>
-                    <?php
-                        foreach ($komp as $k => $v) {
-                            $nm = $v['nama_kompetensi'];
-                            echo "<td class='text-right'>".number_format($row[$nm],2)."</td>";
-                        }
-                    ?>
-                </tr>
+                    <td rowspan="<?= $nr; ?>" ><?= ++$i; ?></td>
+                    <td rowspan="<?= $nr; ?>" ><?= $row['nama']; ?></td>
+                    <td rowspan="<?= $nr; ?>" ><?= $row['jabatan']; ?></td>
+                <?php $j = 0; while($row2 = mysqli_fetch_array($q2)): ?>
+                    <?php if($j!=0): ?>
+                        <tr>
+                    
+                    <?php endif; ?>
+                        <td><?= $row2['kriteria']; ?></td>
+                        <td><?= $row2['sub_kriteria']; ?></td>
+                        <td><?= $row2['bobot']; ?></td>
+                    </tr>
+                <?php $j++; endwhile; ?>
             <?php endwhile; ?>
             </tbody>
         </table>

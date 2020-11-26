@@ -2,6 +2,8 @@
 
 require_once("../config/koneksi.php");
 
+$idp = get_tahun_ajar_id();
+
 if(isset($_POST['btnSimpan'])){
 	$id_pres = isset($_POST['id_pres'])?$con->real_escape_string($_POST['id_pres']):'';	
 	$id_kar = isset($_POST['id_kar'])?$con->real_escape_string($_POST['id_kar']):'';
@@ -40,7 +42,13 @@ if(isset($_GET['id_pres'])){
 	$id_pres = isset($_GET['id_pres'])?$con->real_escape_string($_GET['id_pres']):'';
 	$jml_masuk = isset($_GET['jml_masuk'])?$con->real_escape_string($_GET['jml_masuk']):'';
 	$presen = $jml_masuk +1;
-	$sql = "UPDATE presensi SET jml_masuk = '$presen' WHERE id_pres = '$id_pres'";
+
+	if(substr($id_pres, 0, 3) == "kar"){
+		$id_pres = substr($id_pres, 4, strlen($id_pres));
+		$sql = "INSERT INTO  presensi (id_periode, id_kar, jml_masuk) VALUES ($idp, '$id_pres', $presen)";
+	}else{
+		$sql = "UPDATE presensi SET jml_masuk = '$presen' WHERE id_pres = '$id_pres'";
+	}
 	$proses = mysqli_query($con, $sql);
 	if($proses){
 		$_SESSION["flash"]["type"] = "success";

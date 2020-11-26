@@ -8,6 +8,24 @@
 </div>
 <?php
 
+    if(isset($_GET['acc'])){
+        //echo $_GET['acc'];
+        $idp = $_GET['acc'];
+        $sql = "UPDATE penilai SET sts = 1 WHERE id_penilai = $idp";
+        $q = mysqli_query($con, $sql);
+        if($q){
+            $_SESSION["flash"]["type"] = "success";
+            $_SESSION["flash"]["head"] = "Sukses";
+            $_SESSION["flash"]["msg"] = "Data berhasil disimpan!";
+        }else{
+            $_SESSION["flash"]["type"] = "danger";
+            $_SESSION["flash"]["head"] = "Terjadi Kesalahan";
+            $_SESSION["flash"]["msg"] = "Data gagal disimpan!";
+        }
+        echo '<script>document.location="index.php?p=laporan"</script>';
+    }
+    //print_r($_GET);
+
 if(!isset($_GET['detail'])){
 	/*if($_SESSION['type']==2 || $_SESSION['type']==3){
 		include 'laporan_atasan.php';
@@ -32,9 +50,9 @@ if(!isset($_GET['detail'])){
 					      			$q = mysqli_query($con, $sql);
 					      			while($row = mysqli_fetch_array($q)){
 					      				if($row['status_periode'] == 1){
-					      					echo "<option value='$row[id_periode]' selected style='font-weight:900;'>$row[tahun_ajar] $row[semester]</option>";
+					      					echo "<option value='$row[id_periode]' selected style='font-weight:900;'>$row[tahun], Bulan $row[bulan], Pekan $row[pekan]</option>";
 					      				}else{
-					      					echo "<option value='$row[id_periode]'>$row[tahun_ajar] $row[semester]</option>";
+					      					echo "<option value='$row[id_periode]'>$row[tahun], Bulan $row[bulan], Pekan $row[pekan]</option>";
 					      				}
 					      			}
 					      		?>

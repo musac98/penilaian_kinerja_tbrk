@@ -2,6 +2,9 @@
 
 require_once("../config/koneksi.php");
 
+
+$idp = get_tahun_ajar_id();
+
 if(isset($_POST['btnSimpan'])){
 	$id_kar = isset($_POST['id_kar'])?$con->real_escape_string($_POST['id_kar']):'';
 	$id_jabatan = isset($_POST['id_jabatan'])?$con->real_escape_string($_POST['id_jabatan']):'';
@@ -21,7 +24,7 @@ if(isset($_POST['btnSimpan'])){
 
 	if($_POST['btnSimpan']=="Tambah"){
 		$sql = "INSERT INTO karyawan (id_kar,  id_jabatan, id_toko, password, nama, alamat, no_telp)  VALUES ('$id_kar',  '$id_jabatan', '$id_toko', '$password',  '$nama', '$alamat', '$no_telp')";
-		$sql2 = "INSERT INTO presensi (id_kar, jml_masuk) VALUES ('$id_kar','0')";
+		$sql2 = "INSERT INTO presensi (id_periode, id_kar, jml_masuk) VALUES ($idp, '$id_kar','0')";
 		$proses = mysqli_query($con, $sql);
 		$proses2 = mysqli_query($con, $sql2);
 	}else if($_POST['btnSimpan']=="Ubah"){

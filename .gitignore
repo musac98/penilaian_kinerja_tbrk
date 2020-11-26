@@ -4,6 +4,7 @@
 /config/mysql_mysqli.inc.php
 /vendor/
 *.lock
+*.xlsx
 
 ## Sublime Text cache files
 *.tmlanguage.cache

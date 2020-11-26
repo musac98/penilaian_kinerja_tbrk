@@ -4,15 +4,15 @@ require_once("../config/koneksi.php");
 
 if(isset($_GET['id_pres'])){
 	$id_pres = $_GET['id_pres'];
-	$sql = "SELECT * FROM karyawan k JOIN presensi p ON k.id_kar = p.id_kar WHERE p.id_pres = '$id_pres'";
+	$sql = "SELECT * FROM karyawan WHERE id_kar = '$id_pres'";
 	$q = mysqli_query($con, $sql);
 	$row = mysqli_fetch_array($q);
 ?>
 <table class="table">
 	<tbody>
 		<tr>
-			<th>Nama Karyawan</th>
-			<td>:</td>
+			<th width="20%">Nama Karyawan</th>
+			<td width="1%">:</td>
 			<td><?= $row['nama']; ?></td>
 		</tr>
 		<tr>

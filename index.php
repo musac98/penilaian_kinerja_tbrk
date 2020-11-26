@@ -101,6 +101,12 @@
                     <span>Penilaian Kinerja</span>
                 </a>
             </li>
+            <li class="nav-item" id="laporan">
+                <a class="nav-link" href="index.php?p=laporan" style="color: black">
+                    <i class="fas fa-fw fa-file-pdf" style="color: black"></i>
+                    <span>Laporan Penilaian Kinerja</span>
+                </a>
+            </li>
             <!-- Divider -->
             <hr class="sidebar-divider">
             <?php endif; ?>
@@ -227,7 +233,30 @@
                 }else{
                     include "$dir/home.php";
                 }
+            
+                /*echo '<pre>';
+                $sql = "SELECT * FROM data_penilaian_kinerja";
+                $q = mysqli_query($con, $sql);
+                $id_dpk = [];
+                while($row = mysqli_fetch_array($q)){
+                    $id_dpk[] = $row['id_kriteria'];
+                }
+
+                $sql = "SELECT * FROM penilai a JOIN penilai_detail b ON a.id_penilai = b.id_penilai";
+                $q = mysqli_query($con, $sql);
+                while($row = mysqli_fetch_array($q)){
+                    foreach ($id_dpk as $k => $v) {
+                        $ni = rand(1, 4);
+                        $in = "INSERT INTO penilaian (id_penilai_detail, id_kriteria, hasil_nilai) VALUES ($row[id_penilai_detail], $v, $ni) ";
+                        echo "$in<br>";
+                        mysqli_query($con, $in);
+                    }
+                }
+
+                print_r($id_dpk);
+                echo '</pre>';*/
             ?>
+
             </div>
             <!-- /.container-fluid -->
           </div>

@@ -10,7 +10,7 @@
     <meta name="description" content="Penilaian Kinerja Guru 360 SMA GRACIA Surabaya">
     <meta name="author" content="Musa">
     <link rel="shortcut icon" href="../assets/img/logo.png">
-    <title>SMA GRACIA | Cetak Laporan Penilaian Kinerja Guru 360</title>
+    <title>TBRK Roastery | Penilaian Kinerja Karyawan</title>
 
     <!-- Custom fonts for this template-->
     <link href="../assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -72,9 +72,9 @@
                 <img src="../assets/img/logo.png" alt="Logo" width="100%">
             </div>
             <div class="col-sm cop">
-                <h4>Laporan Penilaian Kinerja Guru Tahun Ajar <?= get_tahun_ajar(); ?></h4>
-                <h3><strong>SMA GRACIA Surabaya</strong></h3>
-                <p>Jl. Gubeng Pojok No.15, Ketabang, Kec. Genteng, Kota Surabaya, Jawa Timur</p>
+                <h4>Laporan Penilaian Kinerja Periode <?= get_tahun_ajar(); ?></h4>
+                <h3><strong>TBRK Roastery</strong></h3>
+                <!-- <p>Jl. Gubeng Pojok No.15, Ketabang, Kec. Genteng, Kota Surabaya, Jawa Timur</p> -->
             </div>
             <div class="col-1">
             </div>
@@ -89,74 +89,48 @@
             $nama_periode = get_tahun_ajar($id_periode);
 
             
-            $sql = "SELECT
-                               a.id_penilai,
-                               b.nip,
-                               b.nama_guru,
-                               a.id_periode
-                            FROM penilai a
-                            JOIN user b ON a.nip = b.nip
-                            WHERE a.id_periode = $id_periode
-                            GROUP BY b.nip
-                            ";
-            $q = mysqli_query($con, $sql);
-            $data = [];
-            $kategori = array_combine(get_kategori(), [0,0,0,0]);
-
-            $tot = mysqli_num_rows($q);
-            $j=0;
-            while($row = mysqli_fetch_array($q)){
-                $data[$j] = $row;
-                $nilai = get_tot_nilai($con, $row['nip'], $id_periode);
-                $data[$j]['nilai'] = $nilai;
-                $txt_nilai = get_kategori_nilai($nilai);
-                $data[$j]['txt_nilai'] = $txt_nilai;
-                $kategori[$txt_nilai] += 1;
-                $j++;
-            }
-            $rekap = "";
-            $j=0;
-            foreach ($kategori as $key => $v) {
-                $persen = ($v/$tot) * 100;
-                $rekap .= $j>0?' | ':' ';
-                $rekap .= $key." = ".number_format($persen)."%";
-                $j++;
-            }
+            $sql = "SELECT *
+                                FROM penilai a
+                                JOIN toko b ON a.id_toko = b.id_toko
+                                WHERE a.id_periode = $id_periode
+                                ";
+                        $q = mysqli_query($con, $sql);
 
         ?>
         <p class="per">Periode : <?= $nama_periode; ?></p>
         <?php
         
         ?>
-        <p class="per">Rekap :<?= $rekap; ?></p>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>NIP</th>
-                    <th>Nama</th>
-                    <th>Total Nilai</th>
-                    <th>Kategori</th>
-                </tr>
-            </thead>
-            <tbody>
-            <?php
-                $i=0;
-                foreach ($data as $row):
-                    
-            ?>
-                <tr>
-                    <td><?= ++$i; ?></td>
-                    <td><?= $row['nip']; ?></td>
-                    <td><?= $row['nama_guru']; ?></td>
-                    <td><?= $row['nilai']; ?></td>
-                    <td><?= $row['txt_nilai']; ?></td>
-                </tr>
-            <?php
-                endforeach;
-            ?>
-            </tbody>
-        </table>
+        <table class="table dataTable">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Karyawan</th>
+                            <th>Total Nilai</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <?php
+                        $i=0;
+                        $sql = "SELECT *
+                                FROM penilai a
+                                JOIN toko b ON a.id_toko = b.id_toko
+                                WHERE a.id_periode = $id_periode
+                                ";
+                        $q = mysqli_query($con, $sql);
+                        while($row = mysqli_fetch_array($q)):
+                            $tot = get_tot_nilai($con, $row['id_penilai'], $id_periode);
+                    ?>
+                        <tr>
+                            <td><?= ++$i; ?></td>
+                            <td><?= get_dinilai($con, $row['id_penilai']); ?></td>
+                            <td><?= $tot; ?></td>
+                        </tr>
+                    <?php
+                        endwhile;
+                    ?>
+                    </tbody>
+                </table>
     </div>
 
     <!-- Bootstrap core JavaScript-->

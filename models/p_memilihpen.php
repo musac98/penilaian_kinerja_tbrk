@@ -3,9 +3,6 @@
 require_once("../config/koneksi.php");
 
 if(isset($_POST['btnSimpan'])){
-	echo "<pre>";
-	print_r($_POST);
-	echo "</pre>";
  
 	if( sizeof($_POST['group_1']) != sizeof($_POST['group_2']) ){
 		$_SESSION["flash"]["type"] = "danger";
@@ -30,7 +27,7 @@ if(isset($_POST['btnSimpan'])){
 					exit();
 				}else{
 					mysqli_autocommit($con,FALSE);
-					$sql = "INSERT INTO penilai (id_toko, id_periode, grup) VALUES ($toko, $idp, '$grup')";
+					$sql = "INSERT INTO penilai (id_toko, id_periode, grup, sts) VALUES ($toko, $idp, '$grup', '0')";
 					$proses[] = mysqli_query($con, $sql)?1:0;
 					$id_penilai = mysqli_insert_id($con);
 					foreach ($_POST["group_$i"] as $k => $v) {

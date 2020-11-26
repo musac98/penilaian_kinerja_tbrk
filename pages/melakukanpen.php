@@ -8,14 +8,17 @@
 		$ket = $_GET['ket'];
 		$form = $ket;
 		$id = $_GET['id'];
+        $id_kar = $_SESSION['user'];
         $sql = "SELECT *
                 FROM penilai a
                 JOIN toko b ON a.id_toko = b.id_toko
-                WHERE a.id_penilai = $id ";
+                JOIN penilai_detail c ON a.id_penilai = c.id_penilai
+                WHERE a.id_penilai = $id AND c.id_kar = '$id_kar' ";
         $q = mysqli_query($con, $sql);
         $row = mysqli_fetch_array($q);
 	    $karyawan = get_dinilai($con, $row['id_penilai']);
         $toko = $row['lokasi'];
+        $id_penilai_detail = $row['id_penilai_detail'];
     }
 
 ?>
@@ -66,7 +69,7 @@
             			$q = mysqli_query($con, $sql);
             			while($row = mysqli_fetch_array($q)):
             		?>
-            			<tr id="<?= $row['id_kar']; ?>" class="tr-bold">
+            			<tr id="<?= $row['id_penilai']; ?>" class="tr-bold">
             				<td><?= ++$i; ?></td>
                             <td><?= $row['lokasi']; ?></td>
                             <td><?= get_dinilai($con, $row['id_penilai']); ?></td>
@@ -80,24 +83,29 @@
                 <script type="text/javascript">
                     $(document).ready(function(){
                         <?php
-                            /*$nip_user = $_SESSION['user'];
-                            $sql = "SELECT * FROM penilai a JOIN penilai_detail b ON a.id_penilai = b.id_penilai JOIN user d ON a.nip = d.nip WHERE b.nip = '$nip_user' AND a.id_periode = $id_periode AND b.id_penilai_detail NOT IN(SELECT c.id_penilai_detail FROM penilaian c WHERE c.id_penilai_detail = b.id_penilai_detail) GROUP BY a.id_penilai";
-                            $q = mysqli_query($con, $sql);
+                            $nip_user = $_SESSION['user'];
+                            $sql = "SELECT c.id_penilai FROM penilaian a
+                                    JOIN penilai_detail b ON a.id_penilai_detail = b.id_penilai_detail
+                                    JOIN penilai c ON b.id_penilai = c.id_penilai
+                                    WHERE b.id_kar = '$nip_user' AND c.id_periode = $ida
+                                    GROUP BY c.id_penilai
+                                    ";
+                            
+                                        $q = mysqli_query($con, $sql);
                             while($row = mysqli_fetch_array($q)){
-                                echo "\$('#$row[nip]').removeClass('tr-bold');";
-                            }*/
+                                echo "\$('#$row[id_penilai]').removeClass('tr-bold');";
+                            }
                         ?>
                     });
                 </script>
             	<?php else: ?>
             	<form method="post" id="form_menilai" action="models/p_melakukanpen.php">
+                    <input type="hidden" name="id_penilai_detail" value="<?= $id_penilai_detail; ?>">
             		<table class="table">
                         <tr>
                             <th width="10%">Karyawan</th>
                             <td width="1%">:</td>
                             <td><?= $karyawan; ?></td>
-
-                            <input type="hidden" name="nip" value="<?= $nip; ?>">
                         </tr>   
                         <tr>
                             <th>Toko</th>
@@ -140,14 +148,13 @@
                                     <tr>
                                         <th rowspan="2">No</th>
                                         <th rowspan="2">Isi Kompetensi</th>
-                                        <th colspan="5">Nilai</th>
+                                        <th colspan="4">Nilai</th>
                                     </tr>
                                     <tr>
                                         <th>1</th>
                                         <th>2</th>
                                         <th>3</th>
                                         <th>4</th>
-                                        <th>5</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -161,11 +168,10 @@
                                     <tr>
                                         <td><?= ++$i; ?></td>
                                         <td><?= $row['sub_kriteria']; ?></td>
-                                        <td><input class="rb_nilai" type="radio" id="isi_kompetensi_<?= $row['id_isi'];?>_1" name="isi_kompetensi_<?= $row['id_isi'];?>" value="1" required ></td>
-                                        <td><input class="rb_nilai" type="radio" id="isi_kompetensi_<?= $row['id_isi'];?>_2" name="isi_kompetensi_<?= $row['id_isi'];?>" value="2" required ></td>
-                                        <td><input class="rb_nilai" type="radio" id="isi_kompetensi_<?= $row['id_isi'];?>_3" name="isi_kompetensi_<?= $row['id_isi'];?>" value="3" required ></td>
-                                        <td><input class="rb_nilai" type="radio" id="isi_kompetensi_<?= $row['id_isi'];?>_4" name="isi_kompetensi_<?= $row['id_isi'];?>" value="4" required ></td>
-                                        <td><input class="rb_nilai" type="radio" id="isi_kompetensi_<?= $row['id_isi'];?>_5" name="isi_kompetensi_<?= $row['id_isi'];?>" value="5" required ></td>
+                                        <td><input class="rb_nilai" type="radio" id="isi_kompetensi_<?= $row['id_kriteria'];?>_1" name="isi_kompetensi_<?= $row['id_kriteria'];?>" value="1" required ></td>
+                                        <td><input class="rb_nilai" type="radio" id="isi_kompetensi_<?= $row['id_kriteria'];?>_2" name="isi_kompetensi_<?= $row['id_kriteria'];?>" value="2" required ></td>
+                                        <td><input class="rb_nilai" type="radio" id="isi_kompetensi_<?= $row['id_kriteria'];?>_3" name="isi_kompetensi_<?= $row['id_kriteria'];?>" value="3" required ></td>
+                                        <td><input class="rb_nilai" type="radio" id="isi_kompetensi_<?= $row['id_kriteria'];?>_4" name="isi_kompetensi_<?= $row['id_kriteria'];?>" value="4" required ></td>
                                     </tr>
                                 <?php endwhile; ?>
                                 </tbody>
@@ -186,14 +192,17 @@
                             $nip_user = $_SESSION['user'];
                             $id_periode = get_tahun_ajar_id();;
 
-                            $sql = "SELECT * FROM penilaian a
+                            $sql = "SELECT 
+                                        a.id_penilaian,
+                                        a.id_kriteria,
+                                        a.hasil_nilai 
+                                    FROM penilaian a
                                     JOIN penilai_detail b ON a.id_penilai_detail = b.id_penilai_detail
                                     JOIN penilai c ON b.id_penilai = c.id_penilai
-                                    WHERE b.nip = '$nip_user' AND c.nip = '$nip' AND c.id_periode = $id_periode";
+                                    WHERE c.id_penilai = $id AND b.id_kar = '$nip_user'";
                             $q = mysqli_query($con, $sql);
-                            //echo $sql;
                             while($row = mysqli_fetch_array($q)){
-                                echo "\$('#isi_kompetensi_$row[id_isi]_$row[hasil_nilai]').attr('checked', true);";
+                                echo "\$('#isi_kompetensi_$row[id_kriteria]_$row[hasil_nilai]').attr('checked', true);";
                             }   
                         ?>
                     });

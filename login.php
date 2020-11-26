@@ -103,17 +103,17 @@
 
  	<?php
 
-/*	$sql = "SELECT * FROM user";
+	$sql = "SELECT * FROM karyawan";
 	$q = mysqli_query($con, $sql);
 	while($row = mysqli_fetch_array($q)){
 ?>
 	<form class="user" method="post" action="login.php">
-		<input type="hidden" name="nip" value="<?= $row['nip']; ?>">
+		<input type="hidden" name="id_kar" value="<?= $row['id_kar']; ?>">
 		<input type="hidden" name="password" value="<?= $row['password']; ?>">
-		<input type="submit" class="btn btn-primary btn-user btn-block" value="<?= $row['nama_guru']; ?>" name="btnlogin">					
+		<input type="submit" class="btn btn-primary btn-user btn-block" value="<?= $row['nama']; ?>" name="btnlogin">					
 	</form>
 <?php
-	}*/
+	}
 ?>  
 
 	<?php if(isset($_SESSION["flash"])){ ?>
