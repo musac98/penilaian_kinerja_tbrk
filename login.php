@@ -100,7 +100,7 @@
 
 	</div>
 	
-
+<!-- 
  	<?php
 
 	$sql = "SELECT * FROM karyawan";
@@ -115,7 +115,7 @@
 <?php
 	}
 ?>  
-
+ -->
 	<?php if(isset($_SESSION["flash"])){ ?>
 
     <div class="alert alert-<?= $_SESSION["flash"]["type"]; ?> alert-dismissible fade show" role="alert">

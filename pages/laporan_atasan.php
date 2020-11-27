@@ -24,6 +24,7 @@
                             <th>No</th>
                             <th>Karyawan</th>
                             <th>Total Nilai</th>
+                            <th>Keterangan</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -37,12 +38,14 @@
                                 ";
                         $q = mysqli_query($con, $sql);
                         while($row = mysqli_fetch_array($q)):
-                            $tot = get_tot_nilai($con, $row['id_penilai'], $id_periode);
+                            $pen = new Penilian($con, $row['id_penilai'], $id_periode);
+                            $tot = $pen->get_tot_nilai();
                     ?>
                         <tr>
                             <td><?= ++$i; ?></td>
                             <td><?= get_dinilai($con, $row['id_penilai']); ?></td>
                             <td><?= $tot; ?></td>
+                            <td><?= get_kategori_nilai($tot); ?></td>
                             <td>
                                 <a href="index.php?p=laporan&detail=<?= $row['id_penilai'] ?>&idp=<?= $row['id_periode']; ?>" class="btn btn-sm btn-success" data-toggle="tooltip" data-placement="top" title="Detail"><i class="fa fa-eye"></i></a>
                                 <?php if($row['sts']!=0): ?>

@@ -1,6 +1,6 @@
 <!-- Page Heading -->
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800"> <i class="fa fa-file"></i> Data Penilaian Kinerja </h1>
+    <h1 class="h3 mb-0 text-gray-800"> <i class="fa fa-file"></i> Kriteria Penilaian </h1>
 </div>
 <?php
 	$ket = "Data";
@@ -9,12 +9,11 @@
 		$form = $ket;
 		if($ket == "ubah"){
 			$id = $_GET['id'];
-			$sql = "SELECT * FROM data_penilaian_kinerja a JOIN kriteria b ON a.id_kriteria = b.id_kriteria WHERE id_sub_kriteria = $id ";
+			$sql = "SELECT * FROM kriteria WHERE id_kriteria = $id ";
 			$q = mysqli_query($con, $sql);
 			$row = mysqli_fetch_array($q);
-			$id_sub_kriteria = $row['id_sub_kriteria'];
-            $id_kriteria = $row['id_kriteria'];
-            $sub_kriteria = $row['sub_kriteria'];
+			$id_kriteria = $row['id_kriteria'];
+            $nama_kriteria = $row['nama_kriteria'];
             $bobot = $row['bobot'];
 		}
 	}
@@ -24,12 +23,12 @@
 	<div class="col mb-4">
 		<div class="card shadow mb-4">
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                <h6 class="m-0 font-weight-bold text-primary"><?= ucfirst($ket); ?> Jenis Kompetensi</h6>
+                <h6 class="m-0 font-weight-bold text-primary"><?= ucfirst($ket); ?> Kriteria</h6>
                 <?php
                 if(!isset($_GET['ket'])){
                 ?>
                 <div class="dropdown no-arrow">
-                    <a href="index.php?p=jenis_kompetensi&ket=tambah" class="btn btn-success" data-toggle="tooltip" data-placement="top" title="Tambah Data"><i class="fa fa-plus"></i></a>
+                    <a href="index.php?p=kriteria&ket=tambah" class="btn btn-success" data-toggle="tooltip" data-placement="top" title="Tambah Data"><i class="fa fa-plus"></i></a>
                 </div>
             	<?php } ?>
             </div>
@@ -42,24 +41,24 @@
             			<tr>
             				<th width="5%">No</th>
             				<th width="10%">Kriteria</th>
-            				<th width="50%">Sub Kriteria</th>
+                            <th width="10%">Bobot</th>
             				<th width="10%">Aksi</th>
             			</tr>
             		</thead>
             		<tbody>
             		<?php
             			$i=0;
-            			$sql = "SELECT * FROM data_penilaian_kinerja a JOIN kriteria b ON a.id_kriteria = b.id_kriteria ORDER BY a.id_kriteria";
+            			$sql = "SELECT * FROM kriteria";
             			$q = mysqli_query($con, $sql);
             			while($row = mysqli_fetch_array($q)):
             		?>
             			<tr>
             				<td><?= ++$i; ?></td>
             				<td><?= $row['nama_kriteria']; ?></td>
-            				<td><?= $row['sub_kriteria']; ?></td>
+                            <td><?= $row['bobot']; ?> %</td>
             				<td>
-            					<a href="index.php?p=jenis_kompetensi&ket=ubah&id=<?= $row['id_sub_kriteria'] ?>" class="btn btn-sm btn-primary" data-toggle="tooltip" data-placement="top" title="Ubah Data"><i class="fa fa-pencil-alt"></i></a>
-                                <button type="button" class="btn btn-sm btn-danger btn-hapus" data-id="<?= $row['id_sub_kriteria'] ?>" data-toggle="tooltip" data-placement="top" title="Hapus">
+            					<a href="index.php?p=kriteria&ket=ubah&id=<?= $row['id_kriteria'] ?>" class="btn btn-sm btn-primary" data-toggle="tooltip" data-placement="top" title="Ubah Data"><i class="fa fa-pencil-alt"></i></a>
+                                <button type="button" class="btn btn-sm btn-danger btn-hapus" data-id="<?= $row['id_kriteria'] ?>" data-toggle="tooltip" data-placement="top" title="Hapus">
                                     <i class="fa fa-trash"></i>
                                 </button>
             				</td>
@@ -68,30 +67,18 @@
             		</tbody>
             	</table>
             	<?php else: ?>
-            	<form method="post" action="models/p_jenis_kompetensi.php">
-            		<input type="hidden" name="id_sub_kriteria" value="<?= isset($id_sub_kriteria)?$id_sub_kriteria:''; ?>">
+            	<form method="post" action="models/p_kriteria.php">
+            		<input type="hidden" name="id_kriteria" value="<?= isset($id_kriteria)?$id_kriteria:''; ?>">
 				  	<div class="form-group row">
-                        <label for="kriteria" class="col-sm-2 col-form-label">Kriteria</label>
+                        <label for="nama_kriteria" class="col-sm-2 col-form-label">Kriteria</label>
                         <div class="col-sm-10">
-                            <select name="id_kriteria" id="id_kriteria" class="form-control" >
-                            <?php
-                                $sql = "SELECT * FROM kriteria";
-                                $q = mysqli_query($con, $sql);
-                                while($row = mysqli_fetch_array($q)){
-                                    $sel = '';
-                                    if(isset($kriteria) && $kriteria = $row['id_kriteria']){
-                                        $sel = 'selected';
-                                    }
-                                    echo "<option value=\"$row[id_kriteria]\" $sel >$row[nama_kriteria]</option>";
-                                }
-                            ?>
-                            </select>
+                            <input type="text" class="form-control" name="nama_kriteria" id="nama_kriteria" placeholder="Nama Kriteria" value="<?= isset($nama_kriteria)?$nama_kriteria:''; ?>" >
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="sub_kriteria" class="col-sm-2 col-form-label">Sub Kriteria</label>
+                        <label for="bobot" class="col-sm-2 col-form-label">Bobot Kriteria</label>
                         <div class="col-sm-10">
-                            <textarea name="sub_kriteria" id="sub_kriteria" rows="5" class="form-control" placeholder="Sub Kritria"><?= isset($sub_kriteria)?$sub_kriteria:''; ?></textarea>
+                            <input type="number" min="0" max="100" class="form-control" name="bobot" id="bobot" placeholder="Bobot Kriteria" value="<?= isset($bobot)?$bobot:''; ?>" >
                         </div>
                     </div>
 				  	<div class="form-group row">
@@ -128,7 +115,7 @@
         $(".btn-hapus").click(function(){
             var id = $(this).attr("data-id");
             $('#hapusModal').modal('show');
-            $(".btnhapus-link").attr("href", "models/p_jenis_kompetensi.php?id="+id);
+            $(".btnhapus-link").attr("href", "models/p_kriteria.php?id="+id);
         });
     });
 </script>

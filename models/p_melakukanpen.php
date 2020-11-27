@@ -15,7 +15,7 @@ if(isset($_POST['btnSimpan'])){
 			$idpd = $_POST['id_penilai_detail'];
 			$idk = $exp[2];
 
-			$sql = "SELECT id_penilaian FROM penilaian WHERE id_penilai_detail = $idpd AND id_kriteria = $idk";
+			$sql = "SELECT id_penilaian FROM penilaian WHERE id_penilai_detail = $idpd AND id_sub_kriteria = $idk";
 
 			$q = mysqli_query($con, $sql);
 			while($row = mysqli_fetch_array($q)){
@@ -27,7 +27,7 @@ if(isset($_POST['btnSimpan'])){
 				}
 			}
 
-			$sql = "INSERT INTO penilaian (id_penilai_detail, id_kriteria, hasil_nilai) VALUES ($idpd, $idk, $v)";
+			$sql = "INSERT INTO penilaian (id_penilai_detail, id_sub_kriteria, hasil_nilai) VALUES ($idpd, $idk, $v)";
 			if(mysqli_query($con, $sql)){
 				$proses[] = 1;
 			}else{

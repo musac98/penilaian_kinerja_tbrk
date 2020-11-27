@@ -1,23 +1,16 @@
 
 <?php
     require_once("../../config/koneksi.php");
+include 'cht.home.config.php'; 
 ?>
 
 <canvas id="myBar"></canvas>
 
 <script>
 <?php 
-include 'cht.home.config.php'; 
 
-usort($data, function ($a, $b) {
-    if ($a['nilai'] > $b['nilai']) {
-        return -1;
-    } elseif ($a['nilai'] < $b['nilai']) {
-        return 1;
-    } else {
-        return 0;
-    }
-});
+
+
 
 $label_tinggi = [];
 $nilai_tinggi = [];
@@ -49,6 +42,7 @@ echo "var nilai_tinggi2 = [".join(', ', $nilai_tinggi2)."];";
 
 	};
 	var ctx = document.getElementById('myBar');
+	ctx.height = 100;
 	var myBar = new Chart(ctx, {
 		type: 'bar',
 		data: barChartData,
@@ -78,7 +72,7 @@ echo "var nilai_tinggi2 = [".join(', ', $nilai_tinggi2)."];";
 			  	yAxes: [{
 					ticks: {
 					  	min: 0,
-					  	max: 5,
+					  	max: 8,
 					  	
 					}
 			  	}]

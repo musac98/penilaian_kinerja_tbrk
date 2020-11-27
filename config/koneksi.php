@@ -88,19 +88,136 @@
 	}
 
 	function get_kategori(){
-		return ["Kurang", "Cukup", "Baik", "Sangat Baik"];
+		return ["C (Cukup)", "B (Baik)", "A (Sangat Baik)"];
 	}
 
 	function get_kategori_nilai($n=0){
 		$arr = get_kategori();
-		if($n>4.8 && $n<=7.2){
-			return $arr[3];
-		}else if($n>2.4 && $n<=4.79){
+		if($n>=4.8 && $n<=7.2){
 			return $arr[2];
-		}else if($n>0 && $n<=2.39){
+		}else if($n>=2.4 && $n<=4.79){
 			return $arr[1];
 		}else{
 			return $arr[0];
+		}
+	}
+
+	class Penilian{
+		public $data_kriteria = [];
+		public $max_nilai = 0;
+		public $max_absen = 0;
+		public $absen_kurang = 0;
+		public $np = 0;
+		public $na = [];
+		public $hasil_nilai = 0;
+
+
+		function __construct($con, $id_penilai='', $id_periode='')
+		{
+			$sql = "SELECT                                                         
+						b.id_kriteria,                                                
+						b.nama_kriteria,   
+						b.bobot,                                                
+						COUNT(a.id_sub_kriteria) AS jml                                   
+					FROM data_penilaian_kinerja a
+					JOIN kriteria b ON a.id_kriteria = b.id_kriteria
+					GROUP BY b.id_kriteria
+					ORDER BY b.id_kriteria";
+			$q = mysqli_query($con, $sql);
+			$this->data_kriteria = [];
+			while($row = mysqli_fetch_array($q)){
+				$this->data_kriteria[] = array(
+										'id_kriteria' => $row['id_kriteria'],
+										'kriteria' => $row['nama_kriteria'],
+										'bobot' => $row['bobot'],
+										'jml' => $row['jml']
+										);
+			}
+			$this->max_nilai = 0;
+			foreach ($this->data_kriteria as $k => $v) {
+				$a = (4 * $v['jml']) * ($v['bobot']/100);
+				$this->max_nilai += $a;
+			}
+			
+			// max absen  & get absen
+			$sql = "SELECT * FROM penilai a JOIN grup_dinilai b ON a.id_penilai = b.id_penilai
+					WHERE a.id_penilai = $id_penilai";
+			$q = mysqli_query($con, $sql);
+			$absen = 0;
+			while($row = mysqli_fetch_array($q)){
+				$this->max_absen = mysqli_num_rows($q) * 12;
+				$id_kar = $row['id_kar'];
+				$sql2 = "SELECT jml_masuk FROM presensi WHERE id_kar = '$id_kar' AND id_periode = $id_periode ";
+				$q2 = mysqli_query($con, $sql2);
+				while($row2 = mysqli_fetch_array($q2)){
+					$absen += $row2['jml_masuk'];
+				}
+			}
+
+			$this->np = $this->max_nilai / $this->max_absen;
+			$this->absen_kurang = $this->max_absen - $absen;
+
+			// get nilai
+			$na = 0;
+			foreach ($this->data_kriteria as $k => $v) {
+				$kite = $v['id_kriteria'];
+				$sql = "SELECT 
+							a.id_penilai_detail,
+							b.id_kar,
+							SUM(a.hasil_nilai) AS 'hasil_nilai'
+						FROM penilaian a 
+						JOIN penilai_detail b ON a.id_penilai_detail = b.id_penilai_detail
+						JOIN data_penilaian_kinerja c ON a.id_sub_kriteria = c.id_sub_kriteria
+						WHERE b.id_penilai = $id_penilai AND c.id_kriteria = $kite
+						GROUP BY a.id_penilai_detail";
+				$q = mysqli_query($con, $sql);
+				
+				$tmp_tot = 0;
+				while($row = mysqli_fetch_array($q)){
+					$tmp_tot += $row['hasil_nilai'];
+					$this->data_kriteria[$k]["penilai"][] = $row['id_kar'];
+					$this->data_kriteria[$k]["total"][$row['id_kar']] = $row['hasil_nilai'];
+					$this->data_kriteria[$k]["na"][$row['id_kar']] = $row['hasil_nilai'] * ($v['bobot']/100);
+				}
+				$na = $tmp_tot * ($this->data_kriteria[$k]['bobot']/100);
+			}
+
+			/// cara 2
+			$this->na = [];
+			foreach ($this->data_kriteria as $a => $b) {
+				foreach ($b['penilai'] as $c => $d) {
+					if(!isset($this->na[$d])){
+						$this->na[$d] = $this->data_kriteria[$a]['na'][$d];
+					}else{
+						$this->na[$d] += $this->data_kriteria[$a]['na'][$d];
+					}
+				}
+			}
+			$this->na = array_sum($this->na)/count($this->na);			
+		}
+
+		function get_tot_nilai()
+		{
+			$return = $this->na - ($this->np*$this->absen_kurang);
+			return $return;
+		}
+
+		function get_data_kriteria()
+		{
+			return $this->data_kriteria;
+		}
+
+		function get_na_kriteria($id, $pen = '')
+		{
+			foreach ($this->data_kriteria as $k => $v) {
+				if($id == $v['id_kriteria']){
+					if($pen == ''){
+						return $v['na'];
+					}else{
+						return $v['na'][$pen];
+					}
+				}
+			}
 		}
 	}
 
@@ -109,16 +226,20 @@
 
 		// max nilai 
 		$sql = "SELECT                                                         
-					id_kriteria,                                                
-					kriteria,   
-					bobot,                                                
-					COUNT(id_kriteria) AS jml                                   
-				FROM data_penilaian_kinerja GROUP BY kriteria ORDER BY kriteria";
+					b.id_kriteria,                                                
+					b.nama_kriteria,   
+					b.bobot,                                                
+					COUNT(a.id_sub_kriteria) AS jml                                   
+				FROM data_penilaian_kinerja a
+				JOIN kriteria b ON a.id_kriteria = b.id_kriteria
+				GROUP BY b.id_kriteria
+				ORDER BY b.id_kriteria";
 		$q = mysqli_query($con, $sql);
 		$data_kriteria = [];
 		while($row = mysqli_fetch_array($q)){
 			$data_kriteria[] = array(
-									'kriteria' => $row['kriteria'],
+									'id_kriteria' => $row['id_kriteria'],
+									'kriteria' => $row['nama_kriteria'],
 									'bobot' => $row['bobot'],
 									'jml' => $row['jml']
 									);
@@ -144,41 +265,51 @@
 			}
 		}
 
-		$np = $max_nilai * $max_absen;
+		$np = $max_nilai / $max_absen;
 		$absen_kurang = $max_absen - $absen;
+		//echo "$max_nilai * $max_absen = $np | $absen_kurang <br>";
 		// get nilai
 		$na = 0;
 		foreach ($data_kriteria as $k => $v) {
-			$kite = $v['kriteria'];
+			$kite = $v['id_kriteria'];
 			$sql = "SELECT 
 						a.id_penilai_detail,
 						b.id_kar,
 						SUM(a.hasil_nilai) AS 'hasil_nilai'
 					FROM penilaian a 
 					JOIN penilai_detail b ON a.id_penilai_detail = b.id_penilai_detail
-					JOIN data_penilaian_kinerja c ON a.id_kriteria = c.id_kriteria
-					WHERE b.id_penilai = $id_penilai AND c.kriteria = '$kite'
+					JOIN data_penilaian_kinerja c ON a.id_sub_kriteria = c.id_sub_kriteria
+					WHERE b.id_penilai = $id_penilai AND c.id_kriteria = $kite
 					GROUP BY a.id_penilai_detail";
 			$q = mysqli_query($con, $sql);
 			
 			$tmp_tot = 0;
 			while($row = mysqli_fetch_array($q)){
 				$tmp_tot += $row['hasil_nilai'];
+				$data_kriteria[$k]["penilai"][] = $row['id_kar'];
 				$data_kriteria[$k]["total"][$row['id_kar']] = $row['hasil_nilai'];
 				$data_kriteria[$k]["na"][$row['id_kar']] = $row['hasil_nilai'] * ($v['bobot']/100);
 			}
 			$na = $tmp_tot * ($data_kriteria[$k]['bobot']/100);
 		}
 		/// cara 2
-		/*print_r($data_kriteria);
-		$na = 0;
-		foreach ($data_kriteria as $k => $v) {
-			foreach ($v['na'] as $a => $b) {
-				print_r($b);
-				echo "<br>";
-				$na += $b;
+		//print_r($data_kriteria);
+		$na = [];
+		foreach ($data_kriteria as $a => $b) {
+			foreach ($b['penilai'] as $c => $d) {
+				//echo $d." = ".$data_kriteria[$a]['na'][$d].'<br>';
+				if(!isset($na[$d])){
+					$na[$d] = $data_kriteria[$a]['na'][$d];
+				}else{
+					$na[$d] += $data_kriteria[$a]['na'][$d];
+				}
 			}
-		}*/
+		}
+		//print_r($na);
+		/*$na = array_sum($na)/count($na);
+		echo '<pre>';
+		print_r($data_kriteria);
+		echo '</pre>';*/
 
 		$return = $na - ($np*$absen_kurang);
 		return $return;
@@ -241,6 +372,22 @@
         }
         return $txt;
     }
+
+
+	function get_dinilai_2($con, $idp){
+        $sql = "SELECT * FROM grup_dinilai a JOIN karyawan b ON a.id_kar = b.id_kar WHERE a.id_penilai = $idp";
+        $q = mysqli_query($con, $sql);
+        $txt = '[';
+        $i=0;
+        while($row = mysqli_fetch_array($q)){
+            if($i>0)$txt .= ', ';
+            $txt .= " \"$row[nama]\" ";
+        	$i++;
+        }
+        $txt .= ']';
+        return $txt;
+    }
+
     function get_penilai($con, $idp){
         $sql = "SELECT * FROM penilai_detail a JOIN karyawan b ON a.id_kar = b.id_kar WHERE a.id_penilai = $idp";
         $q = mysqli_query($con, $sql);

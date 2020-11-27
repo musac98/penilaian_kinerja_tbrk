@@ -107,6 +107,7 @@
                             <th>No</th>
                             <th>Karyawan</th>
                             <th>Total Nilai</th>
+                            <th>Keterangan</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -125,6 +126,7 @@
                             <td><?= ++$i; ?></td>
                             <td><?= get_dinilai($con, $row['id_penilai']); ?></td>
                             <td><?= $tot; ?></td>
+                            <td><?= get_kategori_nilai($tot); ?></td>
                         </tr>
                     <?php
                         endwhile;

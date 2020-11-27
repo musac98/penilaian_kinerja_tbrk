@@ -48,6 +48,51 @@ if(isset($_GET['detail'])){
                 <h6 class="m-0 font-weight-bold text-primary">Detail Penilaian</h6>
             </div>
             <div class="card-body">
+                <?php
+                        $i = 0;
+                        $pen = new Penilian($con, $id, $id_periode);
+                        //$data_kirteria = $pen->get_data_kriteria(); 
+                        //print_r($pen->get_data_kriteria());
+                        $sql = "SELECT * FROM penilai_detail a JOIN penilai b ON a.id_penilai = b.id_penilai
+                                JOIN karyawan c ON a.id_kar = c.id_kar
+                                JOIN jabatan d ON c.id_jabatan = d.id_jabatan
+                                JOIN toko e ON b.id_toko = e.id_toko
+                                WHERE b.id_penilai = $id
+                                ORDER BY e.id_toko, c.nama";  
+
+                        $q = mysqli_query($con, $sql);
+                        $data = [];
+                        $i = 0;
+                        while($row = mysqli_fetch_array($q)){
+                            $data[$i] = array(
+                                            'id_penilai_detail' => $row['id_penilai_detail'], 
+                                            'nama' => $row['nama'], 
+                                            'jabatan' => $row['jabatan'], 
+                                            );
+
+                            $sql2 = "SELECT
+                                *
+                                FROM penilaian a
+                                JOIN data_penilaian_kinerja c ON a.id_sub_kriteria = c.id_sub_kriteria
+                                JOIN kriteria d ON c.id_kriteria = d.id_kriteria
+                                WHERE a.id_penilai_detail = $row[id_penilai_detail] ";
+                            $q2 = mysqli_query($con, $sql2);
+                            $j = 0;
+                            while($row2 = mysqli_fetch_array($q2)){
+                                $data[$i]['nilai'][$row2['nama_kriteria']]['na'] = $pen->get_na_kriteria($row2['id_kriteria'], $row['id_kar']);
+                                //$data[$i]['nilai'][$row2['nama_kriteria']]['detail'][][$row2['sub_kriteria']] = $row2['hasil_nilai'];
+                                $data[$i]['nilai'][$row2['nama_kriteria']]['detail'][] = array(
+                                                                                                'sub_kriteria' => $row2['sub_kriteria'],
+                                                                                                'hasil_nilai' => $row2['hasil_nilai'] 
+                                                                                                );
+                                $data[$i]['nr_utama'] = $j+1;
+                                $j++;
+                            }
+                            $i++;
+                        }
+
+                        //print_r($data);
+                    ?>
                 <table class="table">
                     <thead>
                         <tr>
@@ -57,46 +102,55 @@ if(isset($_GET['detail'])){
                             <th>Kriteria</th>
                             <th>Sub Kriteria</th>
                             <th>Nilai</th>
+                            <th>Total</th>
                         </tr>
                     </thead>
                     <tbody>
                     <?php
-                        $i = 0;
+                    $ret = '';
+                    foreach ($data as $k => $v) {
+                        $ret .=  '<tr>';
 
-                        $sql = "SELECT * FROM penilai_detail a JOIN penilai b ON a.id_penilai = b.id_penilai
-                                JOIN karyawan c ON a.id_kar = c.id_kar
-                                JOIN jabatan d ON c.id_jabatan = d.id_jabatan
-                                JOIN toko e ON b.id_toko = e.id_toko
-                                WHERE b.id_penilai = $id
-                                ORDER BY e.id_toko, c.nama
-                                 ";  
+                        $ret .=  '<td rowspan="'.$v['nr_utama'].'" >'.($k+1).'</td>';
+                        $ret .=  '<td rowspan="'.$v['nr_utama'].'" >'.$v['nama'].'</td>';
+                        $ret .=  '<td rowspan="'.$v['nr_utama'].'" >'.$v['jabatan'].'</td>';
 
-                        $q = mysqli_query($con, $sql);
-                        while($row = mysqli_fetch_array($q)):
-                            $sql2 = "SELECT
-                                *
-                                FROM penilaian a
-                                JOIN data_penilaian_kinerja c ON a.id_kriteria = c.id_kriteria
-                                WHERE a.id_penilai_detail = $row[id_penilai_detail] ";
-                            $q2 = mysqli_query($con, $sql2);
-                            $nr = mysqli_num_rows($q2);
+                        $j=0;
+                        foreach ($v['nilai'] as $a => $b) {
+                            if($j!=0){
+                                $ret .=  '<tr>';
+                            } 
+                            $rs = sizeof($b['detail'])>1?'rowspan="'.sizeof($b['detail']).'"':'';
+                            $ret .=  '<td '.$rs.' >'.$a.'</td>';
+                            $k = 0;
+                            foreach ($b['detail'] as $c => $d) {
+                                if($k!=0){
+                                    $ret .=  '<tr>';
+                                }
+                                $ret .=  '<td>'.$d['sub_kriteria'].'</td>';
+                                $ret .=  '<td>'.$d['hasil_nilai'].'</td>';
+
+                                if($k==0){
+                                    $ret .=  '<td rowspan="'.$rs.'" >'.$b['na'].'</td>';
+                                    $ret .=  '</tr>';
+                                }else{
+                                    $ret .=  '</tr>';
+                                }
+                                $k++;
+                            }
+                            $j++;
+                        }
+                    }
+                    //echo htmlentities($ret);
+                    echo $ret;
                     ?>
-                        <tr>
-                            <td rowspan="<?= $nr; ?>" ><?= ++$i; ?></td>
-                            <td rowspan="<?= $nr; ?>" ><?= $row['nama']; ?></td>
-                            <td rowspan="<?= $nr; ?>" ><?= $row['jabatan']; ?></td>
-                        <?php $j = 0; while($row2 = mysqli_fetch_array($q2)): ?>
-                            <?php if($j!=0): ?>
-                                <tr>
-                            
-                            <?php endif; ?>
-                                <td><?= $row2['kriteria']; ?></td>
-                                <td><?= $row2['sub_kriteria']; ?></td>
-                                <td><?= $row2['bobot']; ?></td>
-                            </tr>
-                        <?php $j++; endwhile; ?>
-                    <?php endwhile; ?>
                     </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="6">Total</th>
+                            <th><?= $pen->get_tot_nilai(); ?></th>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
         </div>

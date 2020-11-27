@@ -9,9 +9,9 @@
 include 'cht.home.config.php'; 
 // asc
 usort($data, function ($a, $b) {
-    if ($a['nilai'] < $b['nilai']) {
+    if ($a['nilai'] > $b['nilai']) {
         return -1;
-    } elseif ($a['nilai'] > $b['nilai']) {
+    } elseif ($a['nilai'] < $b['nilai']) {
         return 1;
     } else {
         return 0;
@@ -21,17 +21,18 @@ usort($data, function ($a, $b) {
 $label_rendah = [];
 $nilai_rendah = [];
 $nilai_rendah2 = [];
-foreach ($data as $k => $v) {
+foreach ($data2 as $k => $v) {
 	if($k<5){
 		$label_rendah[] = $v['nama_guru'];
 		$nilai_rendah[] = number_format($v['nilai'], 2);
 		$nilai_rendah2[] = $v['nilai'];
 	}
 }
-echo "var label_rendah = [\"".join('", "', $label_rendah)."\"];";
+echo "var label_rendah = [".join(', ', $label_rendah)."];";
 echo "var nilai_rendah = [".join(', ', $nilai_rendah)."];";
 echo "var nilai_rendah2 = [".join(', ', $nilai_rendah2)."];";
 ?>
+console.log(label_rendah);
 
 	var color = Chart.helpers.color;
 	var barChartData = {
@@ -45,6 +46,7 @@ echo "var nilai_rendah2 = [".join(', ', $nilai_rendah2)."];";
 
 	};
 	var ctx = document.getElementById('myBar2').getContext('2d');
+	ctx.height = 100;
 	window.myBar = new Chart(ctx, {
 		type: 'bar',
 		data: barChartData,
@@ -74,7 +76,7 @@ echo "var nilai_rendah2 = [".join(', ', $nilai_rendah2)."];";
 			  	yAxes: [{
 					ticks: {
 					  	min: 0,
-					  	max: 5,
+					  	max: 8,
 					  	
 					}
 			  	}]

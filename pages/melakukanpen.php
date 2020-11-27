@@ -120,7 +120,7 @@
                     </table>
                     <?php
                         
-                        $sql = "SELECT * FROM data_penilaian_kinerja GROUP BY kriteria";
+                        $sql = "SELECT * FROM kriteria";
                         $q = mysqli_query($con, $sql);
                     ?>
                     <ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -129,11 +129,11 @@
                             $data_kompetensi = [];
                             while($row = mysqli_fetch_array($q)):
                                 $data_kompetensi[$i]['id_kriteria'] = $row['id_kriteria'];
-                                $data_kompetensi[$i]['kriteria'] = $row['kriteria'];
+                                $data_kompetensi[$i]['nama_kriteria'] = $row['nama_kriteria'];
                         ?>
                         <li class="nav-item" role="presentation">
-                            <a class="nav-link <?= $i==0?'active':''?>" id="kom_<?= $row['id_kriteria']; ?>-tab" data-toggle="tab" href="#kom_<?= $row['id_kriteria']; ?>" role="tab" aria-controls="<?= $row['nama_kompetensi']; ?>" aria-selected="true">
-                                <?= $row['kriteria']; ?>
+                            <a class="nav-link <?= $i==0?'active':''?>" id="kom_<?= $row['id_kriteria']; ?>-tab" data-toggle="tab" href="#kom_<?= $row['id_kriteria']; ?>" role="tab" aria-controls="<?= $row['nama_kriteria']; ?>" aria-selected="true">
+                                <?= $row['nama_kriteria']; ?>
                             </a>
                         </li>
                         <?php $i++; endwhile; ?>
@@ -142,7 +142,7 @@
                         <?php
                             foreach ($data_kompetensi as $k => $v):
                         ?>
-                        <div class="tab-pane fade <?= $k==0?"show active":''; ?>" id="kom_<?= $v['id_kriteria'];?>" role="tabpanel" aria-labelledby="<?= $v['kriteria'];?>-tab">
+                        <div class="tab-pane fade <?= $k==0?"show active":''; ?>" id="kom_<?= $v['id_kriteria'];?>" role="tabpanel" aria-labelledby="<?= $v['nama_kriteria'];?>-tab">
                             <table class="table">
                                 <thead>
                                     <tr>
@@ -160,18 +160,18 @@
                                 <tbody>
                                 <?php
                                     $i = 0;
-                                    $kriteria = $v['kriteria'];
-                                    $sql = "SELECT * FROM data_penilaian_kinerja WHERE kriteria = '$kriteria' ";
+                                    $kriteria = $v['id_kriteria'];
+                                    $sql = "SELECT * FROM data_penilaian_kinerja WHERE id_kriteria = '$kriteria' ";
                                     $q = mysqli_query($con, $sql);
                                     while($row = mysqli_fetch_array($q)):
                                 ?>
                                     <tr>
                                         <td><?= ++$i; ?></td>
                                         <td><?= $row['sub_kriteria']; ?></td>
-                                        <td><input class="rb_nilai" type="radio" id="isi_kompetensi_<?= $row['id_kriteria'];?>_1" name="isi_kompetensi_<?= $row['id_kriteria'];?>" value="1" required ></td>
-                                        <td><input class="rb_nilai" type="radio" id="isi_kompetensi_<?= $row['id_kriteria'];?>_2" name="isi_kompetensi_<?= $row['id_kriteria'];?>" value="2" required ></td>
-                                        <td><input class="rb_nilai" type="radio" id="isi_kompetensi_<?= $row['id_kriteria'];?>_3" name="isi_kompetensi_<?= $row['id_kriteria'];?>" value="3" required ></td>
-                                        <td><input class="rb_nilai" type="radio" id="isi_kompetensi_<?= $row['id_kriteria'];?>_4" name="isi_kompetensi_<?= $row['id_kriteria'];?>" value="4" required ></td>
+                                        <td><input class="rb_nilai" type="radio" id="isi_kompetensi_<?= $row['id_sub_kriteria'];?>_1" name="isi_kompetensi_<?= $row['id_sub_kriteria'];?>" value="1" required ></td>
+                                        <td><input class="rb_nilai" type="radio" id="isi_kompetensi_<?= $row['id_sub_kriteria'];?>_2" name="isi_kompetensi_<?= $row['id_sub_kriteria'];?>" value="2" required ></td>
+                                        <td><input class="rb_nilai" type="radio" id="isi_kompetensi_<?= $row['id_sub_kriteria'];?>_3" name="isi_kompetensi_<?= $row['id_sub_kriteria'];?>" value="3" required ></td>
+                                        <td><input class="rb_nilai" type="radio" id="isi_kompetensi_<?= $row['id_sub_kriteria'];?>_4" name="isi_kompetensi_<?= $row['id_sub_kriteria'];?>" value="4" required ></td>
                                     </tr>
                                 <?php endwhile; ?>
                                 </tbody>
@@ -194,7 +194,7 @@
 
                             $sql = "SELECT 
                                         a.id_penilaian,
-                                        a.id_kriteria,
+                                        a.id_sub_kriteria,
                                         a.hasil_nilai 
                                     FROM penilaian a
                                     JOIN penilai_detail b ON a.id_penilai_detail = b.id_penilai_detail
@@ -202,7 +202,7 @@
                                     WHERE c.id_penilai = $id AND b.id_kar = '$nip_user'";
                             $q = mysqli_query($con, $sql);
                             while($row = mysqli_fetch_array($q)){
-                                echo "\$('#isi_kompetensi_$row[id_kriteria]_$row[hasil_nilai]').attr('checked', true);";
+                                echo "\$('#isi_kompetensi_$row[id_sub_kriteria]_$row[hasil_nilai]').attr('checked', true);";
                             }   
                         ?>
                     });

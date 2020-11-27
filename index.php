@@ -40,7 +40,7 @@
                     <i class="fas fa-laugh-wink"></i>
                 </div> -->
                 <img src="assets/img/logo.png" alt="Logo" width="50px">
-                <div class="sidebar-brand-text mx-3" style="text-align:left;font-size: 0.8em;">Penilaian Kinerja Guru</div>
+                <div class="sidebar-brand-text mx-3" style="text-align:left;font-size: 0.8em;">Penilaian Kinerja</div>
             </a>
 
             <!-- Divider -->
@@ -72,6 +72,12 @@
                 <a class="nav-link" href="index.php?p=user" style="color: black">
                     <i class="fas fa-fw fa-user" style="color: black"></i>
                     <span>Karyawan</span>
+                </a>
+            </li>
+            <li class="nav-item" id="kriteria">
+                <a class="nav-link" href="index.php?p=kriteria" style="color: black">
+                    <i class="fas fa-fw fa-file" style="color: black"></i>
+                    <span>Kriteria</span>
                 </a>
             </li>
             <li class="nav-item" id="jenis_kompetensi">
@@ -111,7 +117,7 @@
             <hr class="sidebar-divider">
             <?php endif; ?>
             <!-- Heading -->
-            <?php if($_SESSION['type']!=2):?>
+            <?php if($_SESSION['type']!=2 && $_SESSION['type']!=4):?>
             <div class="sidebar-heading" style="color: black">
                 Master
             </div>
@@ -147,9 +153,13 @@
                 </a>
             </li>
             <?php endif; ?>
+
+            <?php if($_SESSION['type']!=4):?>
             <div class="sidebar-heading" style="color: black;">
                 Penilaian
             </div>
+            <?php endif; ?>
+
             <?php if($_SESSION['type']==1):?>
             <li class="nav-item" id="melakukanpen">
                 <a class="nav-link" href="index.php?p=melakukanpen" style="color: black">
@@ -239,7 +249,7 @@
                 $q = mysqli_query($con, $sql);
                 $id_dpk = [];
                 while($row = mysqli_fetch_array($q)){
-                    $id_dpk[] = $row['id_kriteria'];
+                    $id_dpk[] = $row['id_sub_kriteria'];
                 }
 
                 $sql = "SELECT * FROM penilai a JOIN penilai_detail b ON a.id_penilai = b.id_penilai";
@@ -247,13 +257,29 @@
                 while($row = mysqli_fetch_array($q)){
                     foreach ($id_dpk as $k => $v) {
                         $ni = rand(1, 4);
-                        $in = "INSERT INTO penilaian (id_penilai_detail, id_kriteria, hasil_nilai) VALUES ($row[id_penilai_detail], $v, $ni) ";
+                        $in = "INSERT INTO penilaian (id_penilai_detail, id_sub_kriteria, hasil_nilai) VALUES ($row[id_penilai_detail], $v, $ni) ";
                         echo "$in<br>";
                         mysqli_query($con, $in);
                     }
                 }
 
                 print_r($id_dpk);
+                echo '</pre>';*/
+
+                /*echo '<pre>';
+                $sql = "SELECT * FROM data_penilaian_kinerja";
+                $q = mysqli_query($con, $sql);
+                while($row = mysqli_fetch_array($q)){
+                    $nm = $row['kriteria'];
+                    $sql2 = "SELECT * FROM kriteria WHERE nama_kriteria  = '$nm'";
+                    $q2 = mysqli_query($con, $sql2);
+                    while($row2 = mysqli_fetch_array($q2)){
+                        $id = $row2['id_kriteria'];
+                        $ids = $row['id_sub_kriteria'];
+                        $update = "UPDATE data_penilaian_kinerja SET kriteria = $id WHERE id_sub_kriteria = $ids";
+                        mysqli_query($con, $update);
+                    }
+                }
                 echo '</pre>';*/
             ?>
 
