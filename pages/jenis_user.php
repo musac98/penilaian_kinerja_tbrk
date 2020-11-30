@@ -27,9 +27,7 @@
                 <?php
                 if(!isset($_GET['ket'])){
                 ?>
-                <div class="dropdown no-arrow">
-                    <a href="index.php?p=jenis_user&ket=tambah" class="btn btn-success" data-toggle="tooltip" data-placement="top" title="Tambah Data"><i class="fa fa-plus"></i></a>
-                </div>
+                
                 <?php } ?>
             </div>
             <div class="card-body">

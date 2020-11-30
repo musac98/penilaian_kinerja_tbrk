@@ -99,7 +99,7 @@
                                         if(isset($id_jabatan) && $id_jabatan==$row['id_jabatan']){
                                             $sel = 'selected';
                                         }
-                                        echo '<option value="'.$row['jabatan'].'" '.$sel.'>'.$row['jabatan'].'</option>';
+                                        echo '<option value="'.$row['id_jabatan'].'" '.$sel.'>'.$row['jabatan'].'</option>';
                                     }  
                                 ?>
                             </select>
@@ -118,7 +118,7 @@
                                         if(isset($id_toko) && $id_toko==$row['id_toko']){
                                             $sel = 'selected';
                                         }
-                                        echo '<option value="'.$row['lokasi'].'" '.$sel.'>'.$row['lokasi'].'</option>';
+                                        echo '<option value="'.$row['id_toko'].'" '.$sel.'>'.$row['lokasi'].'</option>';
                                     }  
                                 ?>
                             </select>

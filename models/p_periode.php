@@ -21,7 +21,7 @@ if(isset($_POST['btnSimpan'])){
 		$sql = "UPDATE periode SET status_periode = 0";
 		$proses = mysqli_query($con, $sql);
 		if($proses){
-			$sql = "INSERT INTO periode (tahun, bulan, pekan, status_periode)  VALUES ('$tahun',  '$bulan',  '$pekan',  '2')";
+			$sql = "INSERT INTO periode (tahun, bulan, pekan, status_periode)  VALUES ('$tahun',  '$bulan',  '$pekan',  '1')";
 			$proses = mysqli_query($con, $sql);
 		}
 	}else if($_POST['btnSimpan']=="Ubah"){

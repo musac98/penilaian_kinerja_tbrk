@@ -29,16 +29,14 @@
                 <?php
                 if(!isset($_GET['ket'])){
                 ?>
-                    <h6 class="m-0 font-weight-bold text-primary"><?= ucfirst($ket); ?> Guru yang Dinilai</h6>
+                    <h6 class="m-0 font-weight-bold text-primary"><?= ucfirst($ket); ?> Karyawan yang Dinilai</h6>
                 <?php }else{ ?>
                     <h6 class="m-0 font-weight-bold text-primary">Penilaian Kinerja</h6>
             	<?php } ?>
                 <?php
                 if(!isset($_GET['ket'])){
                 ?>
-                <div class="dropdown no-arrow">
-                    <a href="assets/rubrik.pdf" target="blank" class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Rubrik Penilaian"><i class="fa fa-file-pdf"></i></a>
-                </div>
+                
                 <?php } ?>
             </div>
             <div class="card-body">
@@ -76,6 +74,7 @@
             				<td>
                                 <a href="index.php?p=melakukanpen&ket=tambah&id=<?= $row['id_penilai'] ?>" class="btn btn-sm btn-primary" data-toggle="tooltip" data-placement="top" title="Nilai"><i class="fa fa-pencil-alt"></i></a>
                             </td>
+                            
             			</tr>
             		<?php endwhile; ?>
             		</tbody>
@@ -94,6 +93,7 @@
                                         $q = mysqli_query($con, $sql);
                             while($row = mysqli_fetch_array($q)){
                                 echo "\$('#$row[id_penilai]').removeClass('tr-bold');";
+                                
                             }
                         ?>
                     });

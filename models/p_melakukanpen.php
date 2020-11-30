@@ -26,7 +26,6 @@ if(isset($_POST['btnSimpan'])){
 					$proses[] = 0;
 				}
 			}
-
 			$sql = "INSERT INTO penilaian (id_penilai_detail, id_sub_kriteria, hasil_nilai) VALUES ($idpd, $idk, $v)";
 			if(mysqli_query($con, $sql)){
 				$proses[] = 1;
