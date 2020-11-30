@@ -47,11 +47,13 @@
                             <td><?= $tot; ?></td>
                             <td><?= get_kategori_nilai($tot); ?></td>
                             <td>
-                                <a href="index.php?p=laporan&detail=<?= $row['id_penilai'] ?>&idp=<?= $row['id_periode']; ?>" class="btn btn-sm btn-success" data-toggle="tooltip" data-placement="top" title="Detail"><i class="fa fa-eye"></i></a>
-                                <?php if($row['sts']!=0): ?>
-                                <a href="pages/pdf.php?detail=<?= $row['id_penilai'] ?>&idp=<?= $row['id_periode']; ?>" class="btn btn-sm btn-danger" data-toggle="tooltip" data-placement="top" title="Export Pdf"><i class="fa fa-file-pdf"></i></a>
-                                <?php else: ?>
-                                <a href="index.php?p=laporan&acc=<?= $row['id_penilai'] ?>&idp=<?= $row['id_periode']; ?>" class="btn btn-sm btn-primary" data-toggle="tooltip" data-placement="top" title="Konfirmasi"><i class="fa fa-check"></i></a>
+                                <?php if($tot!="-"): ?>
+                                    <a href="index.php?p=laporan&detail=<?= $row['id_penilai'] ?>&idp=<?= $row['id_periode']; ?>" class="btn btn-sm btn-success" data-toggle="tooltip" data-placement="top" title="Detail"><i class="fa fa-eye"></i></a>
+                                    <?php if($row['sts']!=0): ?>
+                                    <a href="pages/pdf.php?detail=<?= $row['id_penilai'] ?>&idp=<?= $row['id_periode']; ?>" class="btn btn-sm btn-danger" data-toggle="tooltip" data-placement="top" title="Export Pdf"><i class="fa fa-file-pdf"></i></a>
+                                    <?php else: ?>
+                                    <a href="index.php?p=laporan&acc=<?= $row['id_penilai'] ?>&idp=<?= $row['id_periode']; ?>" class="btn btn-sm btn-primary" data-toggle="tooltip" data-placement="top" title="Konfirmasi"><i class="fa fa-check"></i></a>
+                                    <?php endif; ?>
                                 <?php endif; ?>
                             </td>
                         </tr>

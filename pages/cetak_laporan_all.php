@@ -120,7 +120,8 @@
                                 ";
                         $q = mysqli_query($con, $sql);
                         while($row = mysqli_fetch_array($q)):
-                            $tot = get_tot_nilai($con, $row['id_penilai'], $id_periode);
+                            $pen = new Penilian($con, $row['id_penilai'], $id_periode);
+                            $tot = $pen->get_tot_nilai();
                     ?>
                         <tr>
                             <td><?= ++$i; ?></td>

@@ -93,6 +93,9 @@
 
 	function get_kategori_nilai($n=0){
 		$arr = get_kategori();
+		if($n=="-"){
+			return "Belum dinilai";
+		}
 		if($n>=4.8 && $n<=7.2){
 			return $arr[2];
 		}else if($n>=2.4 && $n<=4.79){
@@ -108,7 +111,7 @@
 		public $max_absen = 0;
 		public $absen_kurang = 0;
 		public $np = 0;
-		public $na = [];
+		public $na = 0;
 		public $hasil_nilai = 0;
 
 
@@ -173,32 +176,46 @@
 				$q = mysqli_query($con, $sql);
 				
 				$tmp_tot = 0;
-				while($row = mysqli_fetch_array($q)){
-					$tmp_tot += $row['hasil_nilai'];
-					$this->data_kriteria[$k]["penilai"][] = $row['id_kar'];
-					$this->data_kriteria[$k]["total"][$row['id_kar']] = $row['hasil_nilai'];
-					$this->data_kriteria[$k]["na"][$row['id_kar']] = $row['hasil_nilai'] * ($v['bobot']/100);
+				if(mysqli_num_rows($q)>0){
+					while($row = mysqli_fetch_array($q)){
+						$tmp_tot += $row['hasil_nilai'];
+						$this->data_kriteria[$k]["penilai"][] = $row['id_kar'];
+						$this->data_kriteria[$k]["total"][$row['id_kar']] = $row['hasil_nilai'];
+						$this->data_kriteria[$k]["na"][$row['id_kar']] = $row['hasil_nilai'] * ($v['bobot']/100);
+					}
+					$na = $tmp_tot * ($this->data_kriteria[$k]['bobot']/100);
+				}else{
+					$this->data_kriteria[$k]["penilai"] = []; 
+					$this->data_kriteria[$k]["total"] = []; 
+					$this->data_kriteria[$k]["na"] = []; 
 				}
-				$na = $tmp_tot * ($this->data_kriteria[$k]['bobot']/100);
 			}
 
 			/// cara 2
-			$this->na = [];
+			$tmp_na = [];
 			foreach ($this->data_kriteria as $a => $b) {
-				foreach ($b['penilai'] as $c => $d) {
-					if(!isset($this->na[$d])){
-						$this->na[$d] = $this->data_kriteria[$a]['na'][$d];
-					}else{
-						$this->na[$d] += $this->data_kriteria[$a]['na'][$d];
+				if(sizeof($b['penilai'])==2){
+					foreach ($b['penilai'] as $c => $d) {
+						if(!isset($tmp_na[$d])){
+							$tmp_na[$d] = $this->data_kriteria[$a]['na'][$d];
+						}else{
+							$tmp_na[$d] += $this->data_kriteria[$a]['na'][$d];
+						}
 					}
 				}
 			}
-			$this->na = array_sum($this->na)/count($this->na);			
+
+			if(!empty($tmp_na)){
+				$this->na = array_sum($tmp_na)/count($tmp_na);			
+			}
 		}
 
 		function get_tot_nilai()
 		{
-			$return = $this->na - ($this->np*$this->absen_kurang);
+			$return = "-";
+			if($this->na>0){
+				$return = $this->na - ($this->np*$this->absen_kurang);
+			}
 			return $return;
 		}
 
