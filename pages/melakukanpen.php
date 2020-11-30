@@ -49,6 +49,7 @@
             				<th>No</th>
                             <th>Toko</th>
             				<th>Karyawan Dinilai</th>
+                            <th>Status</th>
             				<th>Aksi</th>
             			</tr>
             		</thead>
@@ -71,6 +72,7 @@
             				<td><?= ++$i; ?></td>
                             <td><?= $row['lokasi']; ?></td>
                             <td><?= get_dinilai($con, $row['id_penilai']); ?></td>
+                            <td class="td_sts">Belum Dinilai</td> 
             				<td>
                                 <a href="index.php?p=melakukanpen&ket=tambah&id=<?= $row['id_penilai'] ?>" class="btn btn-sm btn-primary" data-toggle="tooltip" data-placement="top" title="Nilai"><i class="fa fa-pencil-alt"></i></a>
                             </td>
@@ -93,6 +95,7 @@
                                         $q = mysqli_query($con, $sql);
                             while($row = mysqli_fetch_array($q)){
                                 echo "\$('#$row[id_penilai]').removeClass('tr-bold');";
+                                echo "\$('#$row[id_penilai]>.td_sts').html('Sudah Dinilai');";
                                 
                             }
                         ?>

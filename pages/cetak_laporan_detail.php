@@ -74,6 +74,13 @@
             border-bottom: 1px solid #e3e6f0;
         }
 
+        .table thead th{
+            border-bottom: 2px solid #000;
+        }
+        .table-bordered th, .table-bordered td{
+                border: 1px solid #000;
+        }
+
         @page {
           size: 21cm 29.7cm;
           margin: 0;
@@ -102,6 +109,8 @@
                 $id_periode = get_tahun_ajar_id();
             }
             $nama_periode = get_tahun_ajar($id_periode);
+
+            
         ?>
         <p class="per">Periode : <?= $nama_periode; ?></p>
         
@@ -168,7 +177,7 @@
 
                         //print_r($data);
                     ?>
-                <table class="table">
+                <table class="table table-bordered">
                     <thead>
                         <tr>
                             <th>No</th>
@@ -206,7 +215,7 @@
                                 $ret .=  '<td>'.$d['hasil_nilai'].'</td>';
 
                                 if($k==0){
-                                    $ret .=  '<td rowspan="'.$rs.'" >'.$b['na'].'</td>';
+                                    $ret .=  '<td '.$rs.' >'.$b['na'].'</td>';
                                     $ret .=  '</tr>';
                                 }else{
                                     $ret .=  '</tr>';

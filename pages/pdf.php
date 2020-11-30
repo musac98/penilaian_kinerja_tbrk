@@ -4,7 +4,7 @@ require '../vendor/autoload.php';
 require '../config/koneksi.php';
 use iio\libmergepdf\Merger;
 use Dompdf\Dompdf;
-$root = "http://".$_SERVER['HTTP_HOST'];
+$root = (isset($_SERVER['HTTPS']) ? "https://" : "http://").$_SERVER['HTTP_HOST'];
 $root .= str_replace(basename($_SERVER['SCRIPT_NAME']),"",$_SERVER['SCRIPT_NAME']);
     
     if(isset($_GET['idp'])){
@@ -27,6 +27,8 @@ $root .= str_replace(basename($_SERVER['SCRIPT_NAME']),"",$_SERVER['SCRIPT_NAME'
         $tgl = date("dmy");
 
         $dompdf->stream("laporan_kinerja_".$dd."_".$tgl.'.pdf');
+        //$dompdf->stream("laporan_kinerja_".$dd."_".$tgl.'.pdf', array("Attachment" => false));
+        //exit(0);
     }else{
         $m = new Merger();
 
