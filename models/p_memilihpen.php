@@ -30,13 +30,14 @@ if(isset($_POST['btnSimpan'])){
 					$sql = "INSERT INTO penilai (id_toko, id_periode, grup, sts) VALUES ($toko, $idp, '$grup', '0')";
 					$proses[] = mysqli_query($con, $sql)?1:0;
 					$id_penilai = mysqli_insert_id($con);
+					$owner = get_owener();
 					foreach ($_POST["group_$i"] as $k => $v) {
 						$sql = "INSERT INTO grup_dinilai (id_penilai, id_kar) VALUES ($id_penilai, '$v')";	
 						$proses[] = mysqli_query($con, $sql)?1:0;
+						$id_group = mysqli_insert_id($con);
+						$sql = "INSERT penilai_detail (id_grup, id_kar) VALUES($id_group, '$id_kar'), ($id_group, '$owner')";
+						$proses[] = mysqli_query($con, $sql)?1:0;
 					}
-					$owner = get_owener();
-					$sql = "INSERT penilai_detail (id_penilai, id_kar) VALUES($id_penilai, '$id_kar'), ($id_penilai, '$owner')";
-					$proses[] = mysqli_query($con, $sql)?1:0;
 				}
 			}
 		}else{
@@ -48,23 +49,26 @@ if(isset($_POST['btnSimpan'])){
 
 			$id_kar = isset($_POST['id_kar'])?$con->real_escape_string($_POST['id_kar']):'';
 
+			print_r($_POST);
+
 			mysqli_autocommit($con,FALSE);
 			foreach ($id_penilai as $k => $v) {
 				$i = $k + 1;
-				$idpd = $_POST['penilai_detail_'.$i];
+				/*$idpd = $_POST['penilai_detail_'.$i];
 				$sql = "UPDATE penilai_detail SET id_kar = '$id_kar' WHERE id_penilai_detail = $idpd";
 				$proses[] = mysqli_query($con, $sql)?1:0;
-
+*/
 				$sql = "DELETE FROM grup_dinilai WHERE id_penilai = $v";
 				$proses[] = mysqli_query($con, $sql)?1:0;
-
+				$owner = get_owener();
 				foreach ($_POST["group_$i"] as $ka => $va) {
 					$sql = "INSERT INTO grup_dinilai (id_penilai, id_kar) VALUES ($v, '$va')";	
 					$proses[] = mysqli_query($con, $sql)?1:0;
+					$id_group = mysqli_insert_id($con);
+					$sql = "INSERT penilai_detail (id_grup, id_kar) VALUES($id_group, '$id_kar'), ($id_group, '$owner')";
+					$proses[] = mysqli_query($con, $sql)?1:0;
 				}
 			}
-
-
 		}
 		if(!in_array(0, $proses)){
 			mysqli_commit($con);

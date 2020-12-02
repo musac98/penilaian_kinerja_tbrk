@@ -9,14 +9,18 @@
 		$form = $ket;
 		$id = $_GET['id'];
         $id_kar = $_SESSION['user'];
-        $sql = "SELECT *
-                FROM penilai a
-                JOIN toko b ON a.id_toko = b.id_toko
-                JOIN penilai_detail c ON a.id_penilai = c.id_penilai
-                WHERE a.id_penilai = $id AND c.id_kar = '$id_kar' ";
+        $sql = "SELECT * 
+                FROM penilai_detail a
+                JOIN grup_dinilai b ON a.id_grup = b.id_grup
+                JOIN penilai c ON b.id_penilai = c.id_penilai
+                JOIN toko d ON c.id_toko = d.id_toko
+                JOIN karyawan e ON b.id_kar = e.id_kar
+                WHERE a.id_penilai_detail = $id ";
+
         $q = mysqli_query($con, $sql);
         $row = mysqli_fetch_array($q);
-	    $karyawan = get_dinilai($con, $row['id_penilai']);
+	    //$karyawan = get_dinilai($con, $row['id_penilai']);
+        $karyawan = $row['nama'];
         $toko = $row['lokasi'];
         $id_penilai_detail = $row['id_penilai_detail'];
     }
@@ -60,21 +64,29 @@
             			$i=0;
                         $ida = get_tahun_ajar_id();
                         $id_kar = $_SESSION['user'];
-                        $sql = "SELECT *
-                                FROM penilai a
-                                JOIN toko b ON a.id_toko = b.id_toko
-                                JOIN penilai_detail c ON a.id_penilai = c.id_penilai
-                                WHERE a.id_periode = $ida AND c.id_kar = '$id_kar' ";
+                        $sql = "SELECT 
+                                    a.id_penilai,
+                                    b.lokasi,
+                                    c.id_penilai_detail,
+                                    e.nama
+                                FROM penilai a 
+                                JOIN toko b ON a.id_toko = b.id_toko 
+                                JOIN grup_dinilai d ON a.id_penilai = d.id_penilai 
+                                JOIN karyawan e ON d.id_kar = e.id_kar
+                                JOIN penilai_detail c ON d.id_grup = c.id_grup 
+                                WHERE a.id_periode = $ida AND c.id_kar = '$id_kar' 
+                                ";
+                        //echo $sql;
             			$q = mysqli_query($con, $sql);
             			while($row = mysqli_fetch_array($q)):
             		?>
-            			<tr id="<?= $row['id_penilai']; ?>" class="tr-bold">
+            			<tr id="<?= $row['id_penilai_detail']; ?>" class="tr-bold">
             				<td><?= ++$i; ?></td>
                             <td><?= $row['lokasi']; ?></td>
-                            <td><?= get_dinilai($con, $row['id_penilai']); ?></td>
+                            <td><?= $row['nama']; ?></td>
                             <td class="td_sts">Belum Dinilai</td> 
-            				<td>
-                                <a href="index.php?p=melakukanpen&ket=tambah&id=<?= $row['id_penilai'] ?>" class="btn btn-sm btn-primary" data-toggle="tooltip" data-placement="top" title="Nilai"><i class="fa fa-pencil-alt"></i></a>
+            				<td class="td_btn">
+                                <a href="index.php?p=melakukanpen&ket=tambah&id=<?= $row['id_penilai_detail'] ?>" class="btn btn-sm btn-primary" data-toggle="tooltip" data-placement="top" title="Nilai"><i class="fa fa-pencil-alt"></i></a>
                             </td>
                             
             			</tr>
@@ -85,18 +97,20 @@
                     $(document).ready(function(){
                         <?php
                             $nip_user = $_SESSION['user'];
-                            $sql = "SELECT c.id_penilai FROM penilaian a
+                            
+                            $sql = "SELECT b.id_penilai_detail
+                                    FROM penilaian a
                                     JOIN penilai_detail b ON a.id_penilai_detail = b.id_penilai_detail
-                                    JOIN penilai c ON b.id_penilai = c.id_penilai
-                                    WHERE b.id_kar = '$nip_user' AND c.id_periode = $ida
-                                    GROUP BY c.id_penilai
-                                    ";
+                                    WHERE b.id_kar = '$nip_user'
+                                    GROUP BY b.id_penilai_detail";
                             
                                         $q = mysqli_query($con, $sql);
                             while($row = mysqli_fetch_array($q)){
-                                echo "\$('#$row[id_penilai]').removeClass('tr-bold');";
-                                echo "\$('#$row[id_penilai]>.td_sts').html('Sudah Dinilai');";
-                                
+                                echo "\$('#$row[id_penilai_detail]').removeClass('tr-bold');";
+                                echo "\$('#$row[id_penilai_detail]>.td_sts').html('Sudah Dinilai');";
+                                if($_SESSION['type']==1){
+                                    echo "\$('#$row[id_penilai_detail]>.td_btn').html(' ');";
+                                }   
                             }
                         ?>
                     });
@@ -196,13 +210,12 @@
                             $id_periode = get_tahun_ajar_id();;
 
                             $sql = "SELECT 
-                                        a.id_penilaian,
+                                        a.id_penilai_detail,
                                         a.id_sub_kriteria,
                                         a.hasil_nilai 
                                     FROM penilaian a
                                     JOIN penilai_detail b ON a.id_penilai_detail = b.id_penilai_detail
-                                    JOIN penilai c ON b.id_penilai = c.id_penilai
-                                    WHERE c.id_penilai = $id AND b.id_kar = '$nip_user'";
+                                    WHERE a.id_penilai_detail = $id AND b.id_kar = '$nip_user'";
                             $q = mysqli_query($con, $sql);
                             while($row = mysqli_fetch_array($q)){
                                 echo "\$('#isi_kompetensi_$row[id_sub_kriteria]_$row[hasil_nilai]').attr('checked', true);";

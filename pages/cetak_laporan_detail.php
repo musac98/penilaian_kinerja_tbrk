@@ -6,13 +6,17 @@
         $sql = "SELECT *
                 FROM penilai a
                 JOIN toko b ON a.id_toko = b.id_toko
-                JOIN penilai_detail c ON a.id_penilai = c.id_penilai
-                WHERE a.id_penilai = $id AND a.id_periode = $id_periode ";
+                JOIN grup_dinilai d ON a.id_penilai = d.id_penilai
+                JOIN penilai_detail c ON d.id_grup = c.id_grup
+                JOIN karyawan e ON d.id_kar = e.id_kar
+                WHERE c.id_grup = $id AND a.id_periode = $id_periode ";
+
         $q = mysqli_query($con, $sql);
         $row = mysqli_fetch_array($q);
-        $karyawan = get_dinilai($con, $row['id_penilai']);
+        $karyawan = $row['nama'];
         $toko = $row['lokasi'];
         $id_penilai_detail = $row['id_penilai_detail'];
+        $id_penilai = $row['id_penilai'];
     }
 
 ?>
@@ -67,7 +71,7 @@
         }
         .table th, .table td{
             font-size: 0.7rem;
-            padding: 0.15rem;
+            padding: 0.5rem;
         }
 
         .table tr:last-child{
@@ -78,7 +82,10 @@
             border-bottom: 2px solid #000;
         }
         .table-bordered th, .table-bordered td{
-                border: 1px solid #000;
+            border: 1px solid #000;
+            font-size: 0.7rem;
+            padding: 0.5rem;
+            margin: 0;
         }
 
         @page {
@@ -136,14 +143,17 @@
         <p class="per">Detail Penilaian</p>
                 <?php
                         $i = 0;
-                        $pen = new Penilian($con, $id, $id_periode);
-                        $sql = "SELECT * FROM penilai_detail a JOIN penilai b ON a.id_penilai = b.id_penilai
+                        $pen = new Penilian($con, $id_penilai, $id_periode);
+                        $sql = "SELECT *,
+                                f.id_kar AS 'dinilai'
+                                FROM penilai_detail a 
+                                JOIN grup_dinilai f ON f.id_grup = a.id_grup
+                                JOIN penilai b ON f.id_penilai = b.id_penilai
                                 JOIN karyawan c ON a.id_kar = c.id_kar
                                 JOIN jabatan d ON c.id_jabatan = d.id_jabatan
                                 JOIN toko e ON b.id_toko = e.id_toko
-                                WHERE b.id_penilai = $id
-                                ORDER BY e.id_toko, c.nama";  
-
+                                WHERE f.id_grup = $id
+                                ORDER BY e.id_toko, a.id_kar";  
                         $q = mysqli_query($con, $sql);
                         $data = [];
                         $i = 0;
@@ -163,8 +173,7 @@
                             $q2 = mysqli_query($con, $sql2);
                             $j = 0;
                             while($row2 = mysqli_fetch_array($q2)){
-                                $data[$i]['nilai'][$row2['nama_kriteria']]['na'] = $pen->get_na_kriteria($row2['id_kriteria'], $row['id_kar']);
-                                //$data[$i]['nilai'][$row2['nama_kriteria']]['detail'][][$row2['sub_kriteria']] = $row2['hasil_nilai'];
+                                $data[$i]['nilai'][$row2['nama_kriteria']]['na'] = $pen->get_na_kriteria($row2['id_kriteria'], $row['id_kar'], $row['dinilai']);
                                 $data[$i]['nilai'][$row2['nama_kriteria']]['detail'][] = array(
                                                                                                 'sub_kriteria' => $row2['sub_kriteria'],
                                                                                                 'hasil_nilai' => $row2['hasil_nilai'] 
@@ -174,8 +183,6 @@
                             }
                             $i++;
                         }
-
-                        //print_r($data);
                     ?>
                 <table class="table table-bordered">
                     <thead>
@@ -247,8 +254,7 @@
     <!-- Custom scripts for all pages-->
     <script src="../assets/js/sb-admin-2.min.js"></script>
     <script src="../assets/vendor/datatables/jquery.dataTables.min.js"></script>
-    <script src="../assets/vendor/datatables/dataTables.bootstrap4.min.js"></script> 
-    
+    <script src="../assets/vendor/datatables/dataTables.bootstrap4.min.js"></script>    
 </body>
 
 </html>

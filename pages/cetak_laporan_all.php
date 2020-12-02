@@ -101,36 +101,73 @@
         <?php
         
         ?>
-        <table class="table dataTable">
+                <?php
+                        $i=0;
+                        $sql = "SELECT *,
+                                c.id_kar AS 'dinilai'
+                                FROM penilai a
+                                JOIN toko b ON a.id_toko = b.id_toko
+                                JOIN grup_dinilai c ON a.id_penilai  = c.id_penilai
+                                JOIN karyawan d ON c.id_kar = d.id_kar
+                                WHERE a.id_periode = $id_periode
+                                ORDER BY a.grup
+                                ";
+                        $q = mysqli_query($con, $sql);
+                        $data = [];
+                        while($row = mysqli_fetch_array($q)){
+                            $tot = 7;
+                            if(!isset($data['grup'][$row['grup']])){
+                                $data['grup'][$row['grup']] = 1;
+                            }else{
+                                $data['grup'][$row['grup']] += 1;
+                            }
+
+                            $pen = new Penilian($con, $row['id_penilai'], $id_periode);
+                            $ni = $pen->get_tot_nilai_individu($row['dinilai']);
+                            $ng = $pen->get_tot_nilai();
+                            $data['data'][] = array(
+                                                    'id_penilai' => $row['id_penilai'],
+                                                    'id_periode' => $row['id_periode'],
+                                                    'id_grup' => $row['id_grup'],
+                                                    'nama' => $row['nama'],
+                                                    'nil_id' => $ni.'<br><strong>'.get_kategori_nilai($ni).'</strong>',
+                                                    'nil_gr' =>  $ng.'<br><strong>'.get_kategori_nilai($ng).'</strong>',
+                                                    'grup' => $row['grup'],
+                                                    'sts' => $row['sts'],
+                                                    );
+                        }
+                        //print_r($data);
+                    
+                ?>    
+                <table class="table table-bordered ">
                     <thead>
                         <tr>
                             <th>No</th>
                             <th>Karyawan</th>
-                            <th>Total Nilai</th>
-                            <th>Keterangan</th>
+                            <th>Nilai Individu</th>
+                            <th>Nilai Grup</th>
                         </tr>
                     </thead>
                     <tbody>
                     <?php
                         $i=0;
-                        $sql = "SELECT *
-                                FROM penilai a
-                                JOIN toko b ON a.id_toko = b.id_toko
-                                WHERE a.id_periode = $id_periode
-                                ";
-                        $q = mysqli_query($con, $sql);
-                        while($row = mysqli_fetch_array($q)):
-                            $pen = new Penilian($con, $row['id_penilai'], $id_periode);
-                            $tot = $pen->get_tot_nilai();
+                        $tmp_grup = "";
+                        foreach ($data['data'] as $k => $row):
+                            $tot = 7;   
                     ?>
                         <tr>
                             <td><?= ++$i; ?></td>
-                            <td><?= get_dinilai($con, $row['id_penilai']); ?></td>
-                            <td><?= $tot; ?></td>
-                            <td><?= get_kategori_nilai($tot); ?></td>
+                            <td><?= $row['nama']; ?></td>
+                            <td><?= $row['nil_id']; ?></td>
+                            <?php
+                                if($tmp_grup!=$row['grup']){
+                                    $tmp_grup = $row['grup'];
+                            ?>
+                            <td rowspan="<?= $data['grup'][$row['grup']]; ?>"><?= $row['nil_gr']; ?></td>
+                            <?php } ?>
                         </tr>
                     <?php
-                        endwhile;
+                        endforeach;
                     ?>
                     </tbody>
                 </table>

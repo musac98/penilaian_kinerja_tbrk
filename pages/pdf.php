@@ -22,13 +22,13 @@ $root .= str_replace(basename($_SERVER['SCRIPT_NAME']),"",$_SERVER['SCRIPT_NAME'
         $dompdf = new Dompdf();
         $dompdf->loadHtml($data);
 
-        $dompdf->setPaper('A4', 'landscape');
+        $dompdf->setPaper('A4', 'potrait');
         $dompdf->render();
         $tgl = date("dmy");
 
-        $dompdf->stream("laporan_kinerja_".$dd."_".$tgl.'.pdf');
-        //$dompdf->stream("laporan_kinerja_".$dd."_".$tgl.'.pdf', array("Attachment" => false));
-        //exit(0);
+        //$dompdf->stream("laporan_kinerja_".$dd."_".$tgl.'.pdf');
+        $dompdf->stream("laporan_kinerja_".$dd."_".$tgl.'.pdf', array("Attachment" => false));
+        exit(0);
     }else{
         $m = new Merger();
 
@@ -41,6 +41,8 @@ $root .= str_replace(basename($_SERVER['SCRIPT_NAME']),"",$_SERVER['SCRIPT_NAME'
         $dompdf->render();
         $tgl = date("dmy");
 
-        $dompdf->stream("laporan_kinerja_".$tgl.'.pdf');
+        //$dompdf->stream("laporan_kinerja_".$tgl.'.pdf');
+        $dompdf->stream("laporan_kinerja_".$tgl.'.pdf', array("Attachment" => false));
+        exit(0);
     }
 ?>

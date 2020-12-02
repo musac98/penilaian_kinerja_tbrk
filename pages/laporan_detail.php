@@ -6,13 +6,17 @@ if(isset($_GET['detail'])){
     $sql = "SELECT *
             FROM penilai a
             JOIN toko b ON a.id_toko = b.id_toko
-            JOIN penilai_detail c ON a.id_penilai = c.id_penilai
-            WHERE a.id_penilai = $id AND a.id_periode = $id_periode ";
+            JOIN grup_dinilai d ON a.id_penilai = d.id_penilai
+            JOIN penilai_detail c ON d.id_grup = c.id_grup
+            JOIN karyawan e ON d.id_kar = e.id_kar
+            WHERE c.id_grup = $id AND a.id_periode = $id_periode ";
+
     $q = mysqli_query($con, $sql);
     $row = mysqli_fetch_array($q);
-    $karyawan = get_dinilai($con, $row['id_penilai']);
+    $karyawan = $row['nama'];
     $toko = $row['lokasi'];
     $id_penilai_detail = $row['id_penilai_detail'];
+    $id_penilai = $row['id_penilai'];
 }
 
 ?>
@@ -22,7 +26,7 @@ if(isset($_GET['detail'])){
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                 <h6 class="m-0 font-weight-bold text-primary">Laporan Detail</h6>
                 <div class="dropdown no-arrow">
-                    <a href="pages/pdf.php?detail=<?= $id; ?>&idp=<?= $id_periode; ?>" class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Export PDF"><i class="fa fa-file-pdf"></i></a>
+                    <a href="pages/pdf.php?detail=<?= $id; ?>&idp=<?= $id_periode; ?>" target="blank" class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Export PDF"><i class="fa fa-file-pdf"></i></a>
                 </div>
             </div>
             <div class="card-body">
@@ -50,16 +54,17 @@ if(isset($_GET['detail'])){
             <div class="card-body">
                 <?php
                         $i = 0;
-                        $pen = new Penilian($con, $id, $id_periode);
-                        //$data_kirteria = $pen->get_data_kriteria(); 
-                        //print_r($pen->get_data_kriteria());
-                        $sql = "SELECT * FROM penilai_detail a JOIN penilai b ON a.id_penilai = b.id_penilai
+                        $pen = new Penilian($con, $id_penilai, $id_periode);
+                        $sql = "SELECT *,
+                                f.id_kar AS 'dinilai'
+                                FROM penilai_detail a 
+                                JOIN grup_dinilai f ON f.id_grup = a.id_grup
+                                JOIN penilai b ON f.id_penilai = b.id_penilai
                                 JOIN karyawan c ON a.id_kar = c.id_kar
                                 JOIN jabatan d ON c.id_jabatan = d.id_jabatan
                                 JOIN toko e ON b.id_toko = e.id_toko
-                                WHERE b.id_penilai = $id
-                                ORDER BY e.id_toko, c.nama";  
-
+                                WHERE f.id_grup = $id
+                                ORDER BY e.id_toko, a.id_kar";  
                         $q = mysqli_query($con, $sql);
                         $data = [];
                         $i = 0;
@@ -79,8 +84,7 @@ if(isset($_GET['detail'])){
                             $q2 = mysqli_query($con, $sql2);
                             $j = 0;
                             while($row2 = mysqli_fetch_array($q2)){
-                                $data[$i]['nilai'][$row2['nama_kriteria']]['na'] = $pen->get_na_kriteria($row2['id_kriteria'], $row['id_kar']);
-                                //$data[$i]['nilai'][$row2['nama_kriteria']]['detail'][][$row2['sub_kriteria']] = $row2['hasil_nilai'];
+                                $data[$i]['nilai'][$row2['nama_kriteria']]['na'] = $pen->get_na_kriteria($row2['id_kriteria'], $row['id_kar'], $row['dinilai']);
                                 $data[$i]['nilai'][$row2['nama_kriteria']]['detail'][] = array(
                                                                                                 'sub_kriteria' => $row2['sub_kriteria'],
                                                                                                 'hasil_nilai' => $row2['hasil_nilai'] 
@@ -90,10 +94,8 @@ if(isset($_GET['detail'])){
                             }
                             $i++;
                         }
-
-                        //print_r($data);
                     ?>
-                <table class="table">
+                <table class="table table-bordered">
                     <thead>
                         <tr>
                             <th>No</th>
@@ -131,7 +133,7 @@ if(isset($_GET['detail'])){
                                 $ret .=  '<td>'.$d['hasil_nilai'].'</td>';
 
                                 if($k==0){
-                                    $ret .=  '<td rowspan="'.$rs.'" >'.$b['na'].'</td>';
+                                    $ret .=  '<td '.$rs.' >'.$b['na'].'</td>';
                                     $ret .=  '</tr>';
                                 }else{
                                     $ret .=  '</tr>';

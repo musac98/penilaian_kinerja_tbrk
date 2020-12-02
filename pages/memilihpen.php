@@ -22,19 +22,23 @@
 		$form = $ket;
 		if($ket == "ubah"){
 			$id = $_GET['idt'];
+            $idper = get_tahun_ajar_id();
 			$sql = "SELECT * FROM penilai
-                WHERE id_toko = '$id' ";
+                WHERE id_toko = '$id' AND id_periode = $idper ";
 			$q = mysqli_query($con, $sql);
             $id_penilai = [];
             while($row = mysqli_fetch_array($q)){
                 $toko = $row['id_toko'];
-                $sql2 = "SELECT * FROM penilai_detail a 
+                $sql2 = "SELECT a.id_penilai_detail, b.id_kar FROM penilai_detail a 
                         JOIN karyawan b ON a.id_kar = b.id_kar 
                         JOIN jabatan c ON b.id_jabatan = c.id_jabatan
-                        WHERE c.level = 1 AND a.id_penilai = $row[id_penilai]";
+                        JOIN grup_dinilai d ON a.id_grup = d.id_grup 
+                        WHERE c.level = 1 AND d.id_penilai = $row[id_penilai]
+                        GROUP BY b.id_kar";
                 $q2 = mysqli_query($con, $sql2);
                 $row2 = mysqli_fetch_array($q2);
                 $id_kar = $row2['id_kar'];
+                //echo $sql2."<br>";
                 $id_penilai[] = array(
                                         "id_penilai" => $row['id_penilai'], 
                                         "id_penilai_detail" => $row2['id_penilai_detail'], 
@@ -71,12 +75,8 @@
             <?php
             	if(!isset($form)):
             ?>
-                <pre>
                 <?php
                     
-
-                    
-
                     $idper = get_tahun_ajar_id();
                     $sql = "SELECT *
                             FROM penilai a
@@ -86,7 +86,6 @@
 
                     
                 ?>
-                </pre>
                 <table class="table table-hover dataTable">
                     <thead>
                         <tr>
