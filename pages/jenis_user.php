@@ -40,7 +40,6 @@
                             <th>No</th>
                             <th>Jabatan</th>
                             <th>Level</th>
-                            <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -54,9 +53,6 @@
                             <td><?= ++$i; ?></td>
                             <td><?= $row['jabatan']; ?></td>
                             <td><?= $row['level']; ?></td>
-                            <td>
-                                <a href="index.php?p=jenis_user&ket=ubah&id=<?= $row['id_jabatan'] ?>" class="btn btn-sm btn-primary" data-toggle="tooltip" data-placement="top" title="Ubah Data"><i class="fa fa-pencil-alt"></i></a>
-                            </td>
                         </tr>
                     <?php endwhile; ?>
                     </tbody>
