@@ -43,21 +43,25 @@
         <div class="col-sm-12 mb-4">
             <div class="card shadow mb-4 border-left-success">
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Nilai Pertoko</h6>
+                    <h6 class="m-0 font-weight-bold text-primary">Nilai Perkaryawan</h6>
                 </div>
-                <div class="card-body cht_nilai_tinggi">
-                    
-                </div>
+                <div class="card-body cht_nilai_karyawan"></div>
             </div>
         </div>
-
+        <div class="col-sm-12 mb-4">
+            <div class="card shadow mb-4 border-left-success">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Nilai Pertoko</h6>
+                </div>
+                <div class="card-body cht_nilai_toko"></div>
+            </div>
+        </div>
         <div class="col-sm-12 mb-4">
             <div class="card shadow mb-4 border-left-info">
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                     <h6 class="m-0 font-weight-bold text-primary">Nilai Pertim</h6>
                 </div>
-                <div class="card-body cht_nilai_rendah">
-                </div>
+                <div class="card-body cht_nilai_tim"></div>
             </div>
         </div>
     </div>
@@ -67,14 +71,16 @@
     <script type="text/javascript">
         $(document).ready(function(){
             //$('#filter_nama_guru').select2();
-            $(".cht_nilai_tinggi").load('pages/chart/chart_nilai_tinggi.php');
-            $(".cht_nilai_rendah").load('pages/chart/chart_nilai_rendah.php');
+            $(".cht_nilai_karyawan").load('pages/chart/chart_nilai_tinggi.php');
+            $(".cht_nilai_toko").load('pages/chart/chart_nilai_toko.php');
+            $(".cht_nilai_tim").load('pages/chart/chart_nilai_tim.php');
             //$(".cht_nilai_perperiode").load('pages/chart/chart_nilai_perperiode.php');
             $("#cbid_priode").change(function(){
                 var val = $(this).val();
 
-                $(".cht_nilai_tinggi").load('pages/chart/chart_nilai_tinggi.php?idp='+val);
-                $(".cht_nilai_rendah").load('pages/chart/chart_nilai_rendah.php?idp='+val);
+                $(".cht_nilai_karyawan").load('pages/chart/chart_nilai_tinggi.php?idp='+val);
+                $(".cht_nilai_toko").load('pages/chart/chart_nilai_toko.php?idp='+val);
+                $(".cht_nilai_tim").load('pages/chart/chart_nilai_tim.php?idp='+val);
             });
             /*$("#filter_nama_guru").change(function(){
                 var val = $(this).val();
@@ -125,20 +131,23 @@
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Nilai</div>
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Nilai Tim</div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
                             <?php
                                 $sql = "
                                     SELECT * FROM penilai a JOIN grup_dinilai b ON a.id_penilai = b.id_penilai
-                                    WHERE b.id_kar = '$idkar' AND a.id_periode = $id_periode AND a.sts = 1
+                                    WHERE b.id_kar = '$idkar' AND a.id_periode = $id_periode
                                 ";
                                 $q = mysqli_query($con, $sql);
                                 $row = mysqli_fetch_array($q);
                                 $tot = "-"; 
+                                $nil_id = "-"; 
                                 if(mysqli_num_rows($q)>0){
                                     $pen = new Penilian($con, $row['id_penilai'], $id_periode);
                                     $tot = $pen->get_tot_nilai();
-                                    $tot = $tot." ".get_kategori_nilai($tot);
+                                    $tot = $tot."<br>".get_kategori_nilai($tot);
+                                    $nil_id = $pen->get_tot_nilai_individu($row['id_kar']);
+                                    $nil_id = $nil_id."<br>".get_kategori_nilai($nil_id);
                                 }
                                 echo $tot;
                             ?>
@@ -151,7 +160,27 @@
                 </div>
             </div>
         </div>
+         <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Nilai Individu</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            <?php
+                                echo $nil_id;
+                            ?>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-user fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+   
 
 	<div class="row">
 		<div class="col-xl-12 col-md-12 mb-4">

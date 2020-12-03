@@ -106,7 +106,7 @@
             		<div class="form-group row">
                         <label for="Jumlah Masuk" class="col-sm-2 col-form-label">Jumlah Masuk</label>
                         <div class="col-sm-10">
-                            <input type="number" min="0" max="12" class="form-control" name="jml_masuk" id="jml_masuk" placeholder="Jumlah Masuk" value="<?= isset($jml_masuk)?$jml_masuk:''; ?>" >
+                            <input type="text" class="form-control" name="jml_masuk" id="jml_masuk" placeholder="Jumlah Masuk" value="<?= isset($jml_masuk)?$jml_masuk:''; ?>" >
                         </div>
                     </div>
                     <div class="form-group row">

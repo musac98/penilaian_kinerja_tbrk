@@ -18,9 +18,8 @@
                 </div>
             </div>
             <div class="card-body">
-                <pre>
                 <?php
-                    echo "<br>";
+                        $data['data'] = [];
                         $i=0;
                         $sql = "SELECT *,
                                 c.id_kar AS 'dinilai'
@@ -32,7 +31,6 @@
                                 ORDER BY a.grup
                                 ";
                         $q = mysqli_query($con, $sql);
-                        $data = [];
                         while($row = mysqli_fetch_array($q)){
                             $tot = 7;
                             if(!isset($data['grup'][$row['grup']])){
@@ -51,6 +49,7 @@
                                                     'nama' => $row['nama'],
                                                     'nil_id' => $ni.'<br><strong>'.get_kategori_nilai($ni).'</strong>',
                                                     'nil_gr' =>  $ng.'<br><strong>'.get_kategori_nilai($ng).'</strong>',
+                                                    'tot' => $ni,
                                                     'grup' => $row['grup'],
                                                     'sts' => $row['sts'],
                                                     );
@@ -58,7 +57,6 @@
                         //print_r($data);
                     
                 ?>    
-                </pre>
                 <table class="table table-bordered dataTable ">
                     <thead>
                         <tr>
@@ -87,13 +85,9 @@
                             <td rowspan="<?= $data['grup'][$row['grup']]; ?>"><?= $row['nil_gr']; ?></td>
                             <?php } ?>
                             <td>
-                                <?php if($tot!="-"): ?>
+                                <?php if($row['tot']!="-"): ?>
                                     <a href="index.php?p=laporan&detail=<?= $row['id_grup'] ?>&idp=<?= $row['id_periode']; ?>" class="btn btn-sm btn-success" data-toggle="tooltip" data-placement="top" title="Detail"><i class="fa fa-eye"></i></a>
-                                    <?php if($row['sts']!=0): ?>
                                     <a href="pages/pdf.php?detail=<?= $row['id_grup'] ?>&idp=<?= $row['id_periode']; ?>" class="btn btn-sm btn-danger" data-toggle="tooltip" data-placement="top" title="Export Pdf"><i class="fa fa-file-pdf"></i></a>
-                                    <?php else: ?>
-                                    <a href="index.php?p=laporan&acc=<?= $row['id_grup'] ?>&idp=<?= $row['id_periode']; ?>" class="btn btn-sm btn-primary" data-toggle="tooltip" data-placement="top" title="Konfirmasi"><i class="fa fa-check"></i></a>
-                                    <?php endif; ?>
                                 <?php endif; ?>
                             </td>
                         </tr>

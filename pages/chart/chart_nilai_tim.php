@@ -3,12 +3,12 @@
     require_once("../../config/koneksi.php");
 include 'cht.home.config.php'; 
 ?>
-
-<canvas id="myBar3"></canvas>
+<canvas id="myBar2"></canvas>
 
 <script>
 <?php 
-usort($data3, function ($a, $b) {
+// asc
+usort($data2, function ($a, $b) {
     if ($a['nilai'] > $b['nilai']) {
         return -1;
     } elseif ($a['nilai'] < $b['nilai']) {
@@ -18,43 +18,36 @@ usort($data3, function ($a, $b) {
     }
 });
 
-
-
-$label_tinggi = [];
-$nilai_tinggi = [];
-$nilai_tinggi2 = [];
-$color = [];
-foreach ($data3 as $k => $v) {
-	$label_tinggi[] = $v['nama_guru'];
-	$nilai_tinggi[] = number_format($v['nilai'],2);
-	$nilai_tinggi2[] = $v['nilai'];
-	$color[] = gen_color($k);
-	/*if($k<5){
-	}*/
+$label_rendah = [];
+$nilai_rendah = [];
+$nilai_rendah2 = [];
+foreach ($data2 as $k => $v) {
+	if($k<5){
+		$label_rendah[] = $v['nama_guru'];
+		$nilai_rendah[] = number_format($v['nilai'], 2);
+		$nilai_rendah2[] = $v['nilai'];
+	}
 }
-echo "var label_tinggi = [\"".join('", "', $label_tinggi)."\"];";
-echo "var nilai_tinggi = [".join(', ', $nilai_tinggi)."];";
-echo "var nilai_tinggi2 = [".join(', ', $nilai_tinggi2)."];";
-echo "var color_nil = [\"".join('", "', $color)."\"];";
+echo "var label_rendah = [".join(', ', $label_rendah)."];";
+echo "var nilai_rendah = [".join(', ', $nilai_rendah)."];";
+echo "var nilai_rendah2 = [".join(', ', $nilai_rendah2)."];";
 ?>
-	var numberWithCommas = function(x) {
-		return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-	};
+console.log(label_rendah);
 
 	var color = Chart.helpers.color;
 	var barChartData = {
-		labels: label_tinggi,
+		labels: label_rendah,
 		datasets: [{
 			label: 'Nilai',
-			backgroundColor: color_nil,
+			backgroundColor: [window.chartColors.red, window.chartColors.yellow, window.chartColors.green, window.chartColors.blue],
 			borderWidth: 1,
-			data: nilai_tinggi
+			data: nilai_rendah
 		}]
 
 	};
-	var ctx = document.getElementById('myBar3');
+	var ctx = document.getElementById('myBar2').getContext('2d');
 	ctx.height = 100;
-	var myBar = new Chart(ctx, {
+	window.myBar = new Chart(ctx, {
 		type: 'bar',
 		data: barChartData,
 		options: {
@@ -70,7 +63,7 @@ echo "var color_nil = [\"".join('", "', $color)."\"];";
 		        callbacks: {
 		            label: function(tooltipItem, data) {
 		               	//return data.datasets[tooltipItem.datasetIndex].label + ": " + numberWithCommas(tooltipItem.yLabel);
-		            	return "Nilai "+nilai_tinggi2[tooltipItem.datasetIndex];
+		            	return "Nilai "+nilai_rendah2[tooltipItem.datasetIndex];
 		            }
 		        }
 		    },
@@ -84,6 +77,7 @@ echo "var color_nil = [\"".join('", "', $color)."\"];";
 					ticks: {
 					  	min: 0,
 					  	max: 8,
+					  	
 					}
 			  	}]
 			},
@@ -100,7 +94,5 @@ echo "var color_nil = [\"".join('", "', $color)."\"];";
 	         	}
 	      	}
 		},
-/*		*/
-      	
 	});
 </script>

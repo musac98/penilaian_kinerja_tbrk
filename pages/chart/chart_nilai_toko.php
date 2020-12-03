@@ -4,38 +4,27 @@
 include 'cht.home.config.php'; 
 ?>
 
-<canvas id="myBar3"></canvas>
+<canvas id="myBar"></canvas>
 
 <script>
 <?php 
-usort($data3, function ($a, $b) {
-    if ($a['nilai'] > $b['nilai']) {
-        return -1;
-    } elseif ($a['nilai'] < $b['nilai']) {
-        return 1;
-    } else {
-        return 0;
-    }
-});
+
 
 
 
 $label_tinggi = [];
 $nilai_tinggi = [];
 $nilai_tinggi2 = [];
-$color = [];
-foreach ($data3 as $k => $v) {
-	$label_tinggi[] = $v['nama_guru'];
-	$nilai_tinggi[] = number_format($v['nilai'],2);
-	$nilai_tinggi2[] = $v['nilai'];
-	$color[] = gen_color($k);
-	/*if($k<5){
-	}*/
+foreach ($data as $k => $v) {
+	if($k<5){
+		$label_tinggi[] = $v['nama_guru'];
+		$nilai_tinggi[] = number_format($v['nilai'],2);
+		$nilai_tinggi2[] = $v['nilai'];
+	}
 }
 echo "var label_tinggi = [\"".join('", "', $label_tinggi)."\"];";
 echo "var nilai_tinggi = [".join(', ', $nilai_tinggi)."];";
 echo "var nilai_tinggi2 = [".join(', ', $nilai_tinggi2)."];";
-echo "var color_nil = [\"".join('", "', $color)."\"];";
 ?>
 	var numberWithCommas = function(x) {
 		return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -46,13 +35,13 @@ echo "var color_nil = [\"".join('", "', $color)."\"];";
 		labels: label_tinggi,
 		datasets: [{
 			label: 'Nilai',
-			backgroundColor: color_nil,
+			backgroundColor: [window.chartColors.red, window.chartColors.yellow, window.chartColors.green, window.chartColors.blue],
 			borderWidth: 1,
 			data: nilai_tinggi
 		}]
 
 	};
-	var ctx = document.getElementById('myBar3');
+	var ctx = document.getElementById('myBar');
 	ctx.height = 100;
 	var myBar = new Chart(ctx, {
 		type: 'bar',

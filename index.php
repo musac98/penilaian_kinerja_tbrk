@@ -252,7 +252,7 @@
                     $id_dpk[] = $row['id_sub_kriteria'];
                 }
 
-                $sql = "SELECT * FROM penilai a JOIN penilai_detail b ON a.id_penilai = b.id_penilai";
+                $sql = "SELECT * FROM penilai_detail WHERE id_penilai_detail NOT IN (69, 70, 71, 72, 73, 74)";
                 $q = mysqli_query($con, $sql);
                 while($row = mysqli_fetch_array($q)){
                     foreach ($id_dpk as $k => $v) {

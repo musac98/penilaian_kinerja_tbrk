@@ -1,12 +1,12 @@
 
 <?php
     require_once("../../config/koneksi.php");
+include 'cht.home.config.php'; 
 ?>
-<canvas id="myBar2"> </canvas>
+<canvas id="myBar2"></canvas>
 
 <script>
 <?php 
-include 'cht.home.config.php'; 
 // asc
 usort($data, function ($a, $b) {
     if ($a['nilai'] > $b['nilai']) {

@@ -5,55 +5,19 @@
     }else{
         $id_periode = get_tahun_ajar_id();
     }
-$i=0;
-/*$sql = "SELECT
-            c.id_penilai,
-            d.nip,
-            d.nama_guru
-        FROM penilaian a
-        JOIN penilai_detail b ON a.id_penilai_detail = b.id_penilai_detail
-        JOIN penilai c ON b.id_penilai = c.id_penilai
-        JOIN user d ON c.nip = d.nip
-        WHERE c.id_periode = $id_periode
-        GROUP BY d.nip
-        HAVING COUNT(a.id_nilai) = 
-        (
-            SELECT 
-                SUM(
-                CASE 
-                    WHEN bb.id_jenis_user=11 THEN (SELECT COUNT(*) FROM jenis_kompetensi dd JOIN isi_kompetensi ee ON dd.id_kompetensi = ee.id_kompetensi WHERE ee.ket LIKE '%2%')
-                    WHEN bb.id_jenis_user=6 THEN (SELECT COUNT(*) FROM jenis_kompetensi dd JOIN isi_kompetensi ee ON dd.id_kompetensi = ee.id_kompetensi WHERE ee.ket LIKE '%1%')
-                    ELSE (SELECT COUNT(*) FROM jenis_kompetensi dd JOIN isi_kompetensi ee ON dd.id_kompetensi = ee.id_kompetensi WHERE ee.ket LIKE '%0%')
-                END) AS 'SUDAH_NILAI'
-            FROM penilai_detail aa
-            JOIN user bb ON aa.nip = bb.nip
-            JOIN penilai cc ON aa.id_penilai = cc.id_penilai
-            WHERE cc.nip = d.nip  AND cc.id_periode = $id_periode
-            GROUP BY cc.id_penilai
-            ORDER BY cc.id_penilai
-        )";
+    $i=0;
 
-
-$q = mysqli_query($con, $sql);
-$data = [];
-while($row = mysqli_fetch_array($q)){
-	$data[] = array(
-						'nip' => $row['nip'],
-						'nama_guru' => $row['nama_guru'],
-						'nilai' => get_tot_nilai($con, $row['nip'], $id_periode),
-						);
-}
-*/
 
 $sql = "SELECT *
         FROM penilai a
         JOIN toko b ON a.id_toko = b.id_toko
-        WHERE a.id_periode = $id_periode AND a.sts = 1
+        WHERE a.id_periode = $id_periode
         ";
 $q = mysqli_query($con, $sql);
 
 $tmp = [];
 $data2 = [];
+$data3 = [];
 while($row = mysqli_fetch_array($q)){
     $pen = new Penilian($con, $row['id_penilai'], $id_periode);
     $tot = $pen->get_tot_nilai();
@@ -67,6 +31,15 @@ while($row = mysqli_fetch_array($q)){
                         'nama_guru' => $row['lokasi'],
                         'nilai' => $tot,
                         );
+    $sql2 = "SELECT * FROM grup_dinilai a JOIN karyawan b ON a.id_kar = b.id_kar WHERE a.id_penilai = $row[id_penilai]";
+    $q2 = mysqli_query($con, $sql2);
+    while($row2 = mysqli_fetch_array($q2)){
+        $data3[] = array(
+                        'nip' => $row2['id_grup'],
+                        'nama_guru' => $row2['nama'],
+                        'nilai' => $pen->get_tot_nilai_individu($row2['id_kar']),
+                        );
+    }
 }
 $data = [];
 foreach ($tmp as $key => $value) {
@@ -82,4 +55,7 @@ foreach ($tmp as $key => $value) {
                             );
     }
 }
+/*echo '<pre>';
+print_r($data3);
+echo '</pre>';*/
 ?>

@@ -100,9 +100,9 @@
 
 	</div>
 	
-<!-- 
- 	<?php
 
+ <?php
+ 	if(isset($_GET['debug'])){
 	$sql = "SELECT * FROM karyawan";
 	$q = mysqli_query($con, $sql);
 	while($row = mysqli_fetch_array($q)){
@@ -114,8 +114,9 @@
 	</form>
 <?php
 	}
+	}
 ?>  
- -->
+
 	<?php if(isset($_SESSION["flash"])){ ?>
 
     <div class="alert alert-<?= $_SESSION["flash"]["type"]; ?> alert-dismissible fade show" role="alert">
