@@ -5,6 +5,7 @@ require_once("../config/koneksi.php");
 if(isset($_POST['btnSimpan'])){
 	$id_toko = isset($_POST['id_toko'])?$con->real_escape_string($_POST['id_toko']):'';
 	$lokasi = isset($_POST['lokasi'])?$con->real_escape_string($_POST['lokasi']):'';
+	$setting_jml = isset($_POST['setting_jml'])?$con->real_escape_string($_POST['setting_jml']):'';
 
 	if($lokasi==""){
 		$_SESSION["flash"]["type"] = "danger";
@@ -15,10 +16,10 @@ if(isset($_POST['btnSimpan'])){
 	}
 
 	if($_POST['btnSimpan']=="Tambah"){
-		$sql = "INSERT INTO toko (lokasi)  VALUES ('$lokasi')";
+		$sql = "INSERT INTO toko (lokasi,setting_jml)  VALUES ('$lokasi','$setting_jml')";
 		$proses = mysqli_query($con, $sql);
 	}else if($_POST['btnSimpan']=="Ubah"){
-		$sql = "UPDATE toko SET lokasi = '$lokasi' WHERE id_toko = '$id_toko'";
+		$sql = "UPDATE toko SET lokasi = '$lokasi', setting_jml = '$setting_jml' WHERE id_toko = '$id_toko'";
 		$proses = mysqli_query($con, $sql);
 	}
 

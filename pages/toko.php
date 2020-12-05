@@ -14,6 +14,7 @@
 			$row = mysqli_fetch_array($q);
 			$id_toko = $row['id_toko'];
             $lokasi = $row['lokasi'];
+            $setting_jml = $row['setting_jml'];
 		}   
 	}
 
@@ -40,6 +41,7 @@
             			<tr>
             				<th>No</th>
             				<th>Lokasi</th>
+                            <th>Karyawan/Grup</th>
             				<th>Aksi</th>
             			</tr>
             		</thead>
@@ -53,6 +55,7 @@
             			<tr>
             				<td><?= ++$i; ?></td>
                             <td><?= $row['lokasi']; ?></td>
+                            <td><?= $row['setting_jml'];?></td>
             				<td>
                                 <a href="index.php?p=toko&ket=ubah&id=<?= $row['id_toko'] ?>" class="btn btn-sm btn-primary" data-toggle="tooltip" data-placement="top" title="Ubah Data"><i class="fa fa-pencil-alt"></i></a>
                                 <button type="button" class="btn btn-sm btn-danger btn-hapus" data-id="<?= $row['id_toko'] ?>" data-toggle="tooltip" data-placement="top" title="Hapus">
@@ -70,6 +73,12 @@
                         <label for="lokasi" class="col-sm-2 col-form-label">Lokasi Toko</label>
                         <div class="col-sm-10">
                             <textarea class="form-control" name="lokasi" id="lokasi" placeholder="Lokasi Toko" rows="7"><?= isset($lokasi)?$lokasi:''; ?></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="nama_guru" class="col-sm-2 col-form-label">Karyawan/Grup</label>
+                        <div class="col-sm-10">
+                            <input type="number" min="2" max="3" class="form-control" name="setting_jml" id="setting_jml" placeholder="Jumlah" value="<?= isset($setting_jml)?$setting_jml:''; ?>" >
                         </div>
                     </div>
                     <div class="form-group row">
