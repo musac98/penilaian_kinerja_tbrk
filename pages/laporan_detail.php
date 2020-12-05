@@ -10,7 +10,6 @@ if(isset($_GET['detail'])){
             JOIN penilai_detail c ON d.id_grup = c.id_grup
             JOIN karyawan e ON d.id_kar = e.id_kar
             WHERE c.id_grup = $id AND a.id_periode = $id_periode ";
-
     $q = mysqli_query($con, $sql);
     $row = mysqli_fetch_array($q);
     $karyawan = $row['nama'];

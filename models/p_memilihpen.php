@@ -35,7 +35,7 @@ if(isset($_POST['btnSimpan'])){
 						$sql = "INSERT INTO grup_dinilai (id_penilai, id_kar) VALUES ($id_penilai, '$v')";	
 						$proses[] = mysqli_query($con, $sql)?1:0;
 						$id_group = mysqli_insert_id($con);
-						$sql = "INSERT penilai_detail (id_grup, id_kar) VALUES($id_group, '$id_kar'), ($id_group, '$owner')";
+						$sql = "INSERT penilai_detail (id_grup, id_kar) VALUES($id_group, '$id_kar')";
 						$proses[] = mysqli_query($con, $sql)?1:0;
 					}
 				}
@@ -65,7 +65,7 @@ if(isset($_POST['btnSimpan'])){
 					$sql = "INSERT INTO grup_dinilai (id_penilai, id_kar) VALUES ($v, '$va')";	
 					$proses[] = mysqli_query($con, $sql)?1:0;
 					$id_group = mysqli_insert_id($con);
-					$sql = "INSERT penilai_detail (id_grup, id_kar) VALUES($id_group, '$id_kar'), ($id_group, '$owner')";
+					$sql = "INSERT penilai_detail (id_grup, id_kar) VALUES($id_group, '$id_kar')";
 					$proses[] = mysqli_query($con, $sql)?1:0;
 				}
 			}

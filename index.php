@@ -101,12 +101,12 @@
                     <span>Memilih Penilai</span>
                 </a>
             </li>
-            <li class="nav-item" id="melakukanpen">
+            <!-- <li class="nav-item" id="melakukanpen">
                 <a class="nav-link" href="index.php?p=melakukanpen" style="color: black">
                     <i class="fas fa-fw fa-check-square" style="color: black"></i>
                     <span>Penilaian Kinerja</span>
                 </a>
-            </li>
+            </li> -->
             <li class="nav-item" id="laporan">
                 <a class="nav-link" href="index.php?p=laporan" style="color: black">
                     <i class="fas fa-fw fa-file-pdf" style="color: black"></i>

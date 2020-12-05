@@ -136,7 +136,7 @@
                             <?php
                                 $sql = "
                                     SELECT * FROM penilai a JOIN grup_dinilai b ON a.id_penilai = b.id_penilai
-                                    WHERE b.id_kar = '$idkar' AND a.id_periode = $id_periode
+                                    WHERE b.id_kar = '$idkar' AND a.id_periode = $id_periode AND a.sts = 1
                                 ";
                                 $q = mysqli_query($con, $sql);
                                 $row = mysqli_fetch_array($q);

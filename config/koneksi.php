@@ -180,7 +180,7 @@
 			foreach ($this->data_kriteria as $a => $b) {
 				// dinilai
 				foreach ($b['dinilai'] as $c => $d) {
-					if(sizeof($d)==2){
+					if(sizeof($d)==1){
 						// penilai
 						foreach ($d as $e => $f) {
 							if(!isset($tmp_na[$c][$e])){

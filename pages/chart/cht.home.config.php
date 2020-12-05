@@ -11,7 +11,7 @@
 $sql = "SELECT *
         FROM penilai a
         JOIN toko b ON a.id_toko = b.id_toko
-        WHERE a.id_periode = $id_periode
+        WHERE a.id_periode = $id_periode AND a.sts = 1
         ";
 $q = mysqli_query($con, $sql);
 
@@ -42,17 +42,21 @@ while($row = mysqli_fetch_array($q)){
     }
 }
 $data = [];
-foreach ($tmp as $key => $value) {
-    $ni = 0;
-    foreach ($value as $a => $b) {
-        $ni += $b['nilai'] / sizeof($value);
-    }
-    foreach ($value as $k => $v) {
-        $data[$key] = array(
-                            'nip' => $v['nip'],
-                            'nama_guru' => $v['nama_guru'],
-                            'nilai' => $ni,
-                            );
+if(!empty($tmp)){
+    foreach ($tmp as $key => $value) {
+        $ni = 0;
+        foreach ($value as $a => $b) {
+            if($b['nilai']!="-"){
+                $ni += $b['nilai'] / sizeof($value);
+            }
+        }
+        foreach ($value as $k => $v) {
+            $data[$key] = array(
+                                'nip' => $v['nip'],
+                                'nama_guru' => $v['nama_guru'],
+                                'nilai' => $ni,
+                                );
+        }
     }
 }
 /*echo '<pre>';
