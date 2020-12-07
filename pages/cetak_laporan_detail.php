@@ -14,6 +14,7 @@
         $q = mysqli_query($con, $sql);
         $row = mysqli_fetch_array($q);
         $karyawan = $row['nama'];
+        $id_kar_dinilai = $row['id_kar'];
         $toko = $row['lokasi'];
         $id_penilai_detail = $row['id_penilai_detail'];
         $id_penilai = $row['id_penilai'];
@@ -120,7 +121,7 @@
             
         ?>
         <p class="per">Periode : <?= $nama_periode; ?></p>
-        
+        <br>
         
         <table class="table">
             <tr>
@@ -137,11 +138,8 @@
                 <th>Periode</th>
                 <td>:</td>
                 <td><?= get_tahun_ajar($id_periode); ?></td>
-            </tr>      
-        </table>
-        <hr>
-        <p class="per">Detail Penilaian</p>
-                <?php
+            </tr>     
+             <?php
                         $i = 0;
                         $pen = new Penilian($con, $id_penilai, $id_periode);
                         $sql = "SELECT *,
@@ -157,12 +155,16 @@
                         $q = mysqli_query($con, $sql);
                         $data = [];
                         $i = 0;
+                        $penilai = "";
+                        $jabatan_penilai = "";
                         while($row = mysqli_fetch_array($q)){
                             $data[$i] = array(
                                             'id_penilai_detail' => $row['id_penilai_detail'], 
                                             'nama' => $row['nama'], 
                                             'jabatan' => $row['jabatan'], 
                                             );
+                            $penilai = $row['nama'];
+                            $jabatan_penilai = $row['jabatan'];
 
                             $sql2 = "SELECT
                                 *
@@ -184,12 +186,24 @@
                             $i++;
                         }
                     ?>
+
+                <tr>
+                    <th>Penilai</th>
+                    <td>:</td>
+                    <td><?= $penilai; ?></td>
+                </tr>  
+                <tr>
+                    <th>Jabatan</th>
+                    <td>:</td>
+                    <td><?= $jabatan_penilai; ?></td>
+                </tr>  
+        </table>
+        <hr><br><br>
+        <p class="per">Detail Penilaian</p>
+               
                 <table class="table table-bordered">
                     <thead>
                         <tr>
-                            <th>No</th>
-                            <th>Nama</th>
-                            <th>Jabatan</th>
                             <th>Kriteria</th>
                             <th>Sub Kriteria</th>
                             <th>Nilai</th>
@@ -201,10 +215,6 @@
                     $ret = '';
                     foreach ($data as $k => $v) {
                         $ret .=  '<tr>';
-
-                        $ret .=  '<td rowspan="'.$v['nr_utama'].'" >'.($k+1).'</td>';
-                        $ret .=  '<td rowspan="'.$v['nr_utama'].'" >'.$v['nama'].'</td>';
-                        $ret .=  '<td rowspan="'.$v['nr_utama'].'" >'.$v['jabatan'].'</td>';
 
                         $j=0;
                         foreach ($v['nilai'] as $a => $b) {
@@ -238,7 +248,11 @@
                     </tbody>
                     <tfoot>
                         <tr>
-                            <th colspan="6">Total</th>
+                            <th colspan="3">Total nilai individu</th>
+                            <th><?= $pen->get_tot_nilai_individu($id_kar_dinilai); ?></th>
+                        </tr>
+                        <tr>
+                            <th colspan="3">Total</th>
                             <th><?= $pen->get_tot_nilai(); ?></th>
                         </tr>
                     </tfoot>
