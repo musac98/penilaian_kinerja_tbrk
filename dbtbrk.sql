@@ -1,413 +1,695 @@
--- --------------------------------------------------------
--- Host:                         127.0.0.1
--- Server version:               10.4.11-MariaDB - mariadb.org binary distribution
--- Server OS:                    Win64
--- HeidiSQL Version:             11.1.0.6116
--- --------------------------------------------------------
+-- phpMyAdmin SQL Dump
+-- version 4.5.1
+-- http://www.phpmyadmin.net
+--
+-- Host: 127.0.0.1
+-- Generation Time: 05 Des 2020 pada 10.33
+-- Versi Server: 10.1.19-MariaDB
+-- PHP Version: 5.6.28
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET time_zone = "+00:00";
+
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET NAMES utf8 */;
-/*!50503 SET NAMES utf8mb4 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
 
--- Dumping structure for table dbtbrk.data_penilaian_kinerja
-DROP TABLE IF EXISTS `data_penilaian_kinerja`;
-CREATE TABLE IF NOT EXISTS `data_penilaian_kinerja` (
-  `id_sub_kriteria` int(11) NOT NULL AUTO_INCREMENT,
-  `id_kriteria` int(11) NOT NULL DEFAULT 0,
-  `sub_kriteria` varchar(100) NOT NULL,
-  PRIMARY KEY (`id_sub_kriteria`) USING BTREE,
-  KEY `id_kriteria` (`id_kriteria`),
-  CONSTRAINT `FK_data_penilaian_kinerja_kriteria` FOREIGN KEY (`id_kriteria`) REFERENCES `kriteria` (`id_kriteria`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=latin1;
+--
+-- Database: `dbtbrk`
+--
 
--- Dumping data for table dbtbrk.data_penilaian_kinerja: ~18 rows (approximately)
-/*!40000 ALTER TABLE `data_penilaian_kinerja` DISABLE KEYS */;
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `data_penilaian_kinerja`
+--
+
+CREATE TABLE `data_penilaian_kinerja` (
+  `id_sub_kriteria` int(11) NOT NULL,
+  `id_kriteria` int(11) NOT NULL DEFAULT '0',
+  `sub_kriteria` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data untuk tabel `data_penilaian_kinerja`
+--
+
 INSERT INTO `data_penilaian_kinerja` (`id_sub_kriteria`, `id_kriteria`, `sub_kriteria`) VALUES
-	(1, 1, 'Penguasaan tentang sistem dan prosedur sesuai bidang masing-masing'),
-	(2, 1, 'Hasil pekerjaan yang bermutu dan sesuai dengan peraturan yang ada'),
-	(3, 2, 'Membantu pekerja lain jika mengalami kesulitan'),
-	(4, 3, 'Kemampuan semangat kerja tinggi dalam mempelajari ilmu baru dalam pekerjaan'),
-	(5, 4, 'Menyapa sesama karyawan'),
-	(6, 4, 'Mengucapkan salam ketika ada customer datang'),
-	(7, 5, 'Memeberikan sikap yang professional pada saat melayani  customer'),
-	(8, 5, 'Tingkah laku yang baik terhadap sesama karyawan'),
-	(9, 5, 'Tingkah laku yang baik terhadap atasan'),
-	(10, 6, 'Ketepatan waktu'),
-	(11, 6, 'Kehadiran karyawan'),
-	(12, 7, 'Jujur dalam bekerja  dan saling terbuka dalam hal informasi demi kepentingan bersama'),
-	(13, 8, 'Kelengkapan seragam'),
-	(14, 8, 'Kerapian penampilan'),
-	(15, 9, 'Kemampuan bekerja sama dengan karyawan lain'),
-	(16, 9, 'Kemampuan bekerja sesuai dengan instruksi atasan'),
-	(17, 10, 'Bekerja dengan tulus dan ceria'),
-	(18, 10, 'Menunjukan gaya/style yang sejalan dengan pekerjaan');
-/*!40000 ALTER TABLE `data_penilaian_kinerja` ENABLE KEYS */;
+(1, 1, 'Penguasaan tentang sistem dan prosedur sesuai bidang masing-masing'),
+(2, 1, 'Hasil pekerjaan yang bermutu dan sesuai dengan peraturan yang ada'),
+(3, 2, 'Membantu pekerja lain jika mengalami kesulitan'),
+(4, 3, 'Kemampuan semangat kerja tinggi dalam mempelajari ilmu baru dalam pekerjaan'),
+(5, 4, 'Menyapa sesama karyawan'),
+(6, 4, 'Mengucapkan salam ketika ada customer datang'),
+(7, 5, 'Memeberikan sikap yang professional pada saat melayani  customer'),
+(8, 5, 'Tingkah laku yang baik terhadap sesama karyawan'),
+(9, 5, 'Tingkah laku yang baik terhadap atasan'),
+(10, 6, 'Ketepatan waktu'),
+(11, 6, 'Kehadiran karyawan'),
+(12, 7, 'Jujur dalam bekerja  dan saling terbuka dalam hal informasi demi kepentingan bersama'),
+(13, 8, 'Kelengkapan seragam'),
+(14, 8, 'Kerapian penampilan'),
+(15, 9, 'Kemampuan bekerja sama dengan karyawan lain'),
+(16, 9, 'Kemampuan bekerja sesuai dengan instruksi atasan'),
+(17, 10, 'Bekerja dengan tulus dan ceria'),
+(18, 10, 'Menunjukan gaya/style yang sejalan dengan pekerjaan');
 
--- Dumping structure for table dbtbrk.grup_dinilai
-DROP TABLE IF EXISTS `grup_dinilai`;
-CREATE TABLE IF NOT EXISTS `grup_dinilai` (
-  `id_grup` int(11) NOT NULL AUTO_INCREMENT,
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `grup_dinilai`
+--
+
+CREATE TABLE `grup_dinilai` (
+  `id_grup` int(11) NOT NULL,
   `id_penilai` int(11) NOT NULL,
-  `id_kar` varchar(12) DEFAULT NULL,
-  PRIMARY KEY (`id_grup`),
-  KEY `id_penilai` (`id_penilai`),
-  KEY `id_kar` (`id_kar`),
-  CONSTRAINT `FK_grup_dinilai_karyawan` FOREIGN KEY (`id_kar`) REFERENCES `karyawan` (`id_kar`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `FK_grup_penilai_penilai` FOREIGN KEY (`id_penilai`) REFERENCES `penilai` (`id_penilai`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=73 DEFAULT CHARSET=latin1;
+  `id_kar` varchar(12) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Dumping data for table dbtbrk.grup_dinilai: ~10 rows (approximately)
-/*!40000 ALTER TABLE `grup_dinilai` DISABLE KEYS */;
+--
+-- Dumping data untuk tabel `grup_dinilai`
+--
+
 INSERT INTO `grup_dinilai` (`id_grup`, `id_penilai`, `id_kar`) VALUES
-	(57, 27, 'kar01'),
-	(58, 27, 'karya123'),
-	(59, 28, 'kar03'),
-	(60, 28, 'kar02'),
-	(67, 29, 'kar04'),
-	(68, 29, 'kar05'),
-	(69, 29, 'kar08'),
-	(70, 30, 'kar06'),
-	(71, 30, 'kar07'),
-	(72, 30, 'adhit123');
-/*!40000 ALTER TABLE `grup_dinilai` ENABLE KEYS */;
+(73, 31, 'kar01'),
+(74, 31, 'kar02'),
+(75, 32, 'kar03'),
+(76, 32, 'karya123'),
+(77, 33, 'adhit123'),
+(78, 33, 'kar04'),
+(79, 33, 'kar05'),
+(80, 34, 'kar06'),
+(81, 34, 'kar07'),
+(82, 34, 'kar08');
 
--- Dumping structure for table dbtbrk.jabatan
-DROP TABLE IF EXISTS `jabatan`;
-CREATE TABLE IF NOT EXISTS `jabatan` (
-  `id_jabatan` int(11) NOT NULL AUTO_INCREMENT,
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `jabatan`
+--
+
+CREATE TABLE `jabatan` (
+  `id_jabatan` int(11) NOT NULL,
   `jabatan` varchar(12) NOT NULL,
-  `level` int(11) NOT NULL,
-  PRIMARY KEY (`id_jabatan`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+  `level` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Dumping data for table dbtbrk.jabatan: ~3 rows (approximately)
-/*!40000 ALTER TABLE `jabatan` DISABLE KEYS */;
+--
+-- Dumping data untuk tabel `jabatan`
+--
+
 INSERT INTO `jabatan` (`id_jabatan`, `jabatan`, `level`) VALUES
-	(1, 'Owner', 2),
-	(2, 'Supervisor', 1),
-	(3, 'Karyawan', 4);
-/*!40000 ALTER TABLE `jabatan` ENABLE KEYS */;
+(1, 'Owner', 2),
+(2, 'Supervisor', 1),
+(3, 'Karyawan', 4);
 
--- Dumping structure for table dbtbrk.karyawan
-DROP TABLE IF EXISTS `karyawan`;
-CREATE TABLE IF NOT EXISTS `karyawan` (
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `karyawan`
+--
+
+CREATE TABLE `karyawan` (
   `id_kar` varchar(12) NOT NULL,
   `id_jabatan` int(11) NOT NULL,
   `id_toko` int(11) NOT NULL,
   `password` varchar(12) NOT NULL,
   `nama` varchar(50) NOT NULL,
   `alamat` varchar(50) NOT NULL,
-  `no_telp` varchar(50) NOT NULL,
-  PRIMARY KEY (`id_kar`),
-  KEY `id_jabatan` (`id_jabatan`),
-  KEY `id_toko` (`id_toko`),
-  CONSTRAINT `fk_jab1` FOREIGN KEY (`id_jabatan`) REFERENCES `jabatan` (`id_jabatan`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `fk_toko1` FOREIGN KEY (`id_toko`) REFERENCES `toko` (`id_toko`) ON DELETE CASCADE ON UPDATE CASCADE
+  `no_telp` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Dumping data for table dbtbrk.karyawan: ~13 rows (approximately)
-/*!40000 ALTER TABLE `karyawan` DISABLE KEYS */;
+--
+-- Dumping data untuk tabel `karyawan`
+--
+
 INSERT INTO `karyawan` (`id_kar`, `id_jabatan`, `id_toko`, `password`, `nama`, `alamat`, `no_telp`) VALUES
-	('adhit123', 3, 3, 'adhit321', 'Adhitya', 'Jl. a', '123456'),
-	('kar01', 3, 1, '1234', 'Karyawan Toko 1.1', 'Jl. ini no 1', '87776765652'),
-	('kar02', 3, 1, '1234', 'Karyawan Toko 1.2', 'Jl. ini no 2', '88276355652'),
-	('kar03', 3, 1, '1234', 'Karyawan Toko 1.3', 'Jl. ini no 3', '87791882736'),
-	('kar04', 3, 3, '1234', 'Karyawan Toko 2.1', 'Jl. itu no 1', '83847765652'),
-	('kar05', 3, 3, '1234', 'Karyawan Toko 2.2', 'Jl. itu no 2', '87928375652'),
-	('kar06', 3, 3, '1234', 'Karyawan Toko 2.3', 'Jl. itu no 3', '88278295652'),
-	('kar07', 3, 3, '1234', 'Karyawan Toko 2.4', 'Jl. itu no 4', '12972825652'),
-	('kar08', 3, 3, '1234', 'Karyawan Toko 2.5', 'Jl. itu no 5', '82982728922'),
-	('karya123', 3, 1, '321karya', 'Karyawan', 'Jl. Pandegiling', '08189912376'),
-	('ownertbrk', 1, 1, 'tbrkowner', 'Owner', 'Jl. Babatan Pilang', '08112345678'),
-	('suptbrk', 2, 1, 'tbrksup', 'Supervisor', 'Jl. Banyu Urip', '081987654321'),
-	('suptbrk2', 2, 3, 'tbrksup2', 'Sup2', 'Jl. Gayungan', '0821212457');
-/*!40000 ALTER TABLE `karyawan` ENABLE KEYS */;
+('adhit123', 3, 3, 'adhit321', 'Adhitya', 'Jl. a', '123456'),
+('kar01', 3, 1, '1234', 'Karyawan Toko 1.1', 'Jl. ini no 1', '87776765652'),
+('kar02', 3, 1, '1234', 'Karyawan Toko 1.2', 'Jl. ini no 2', '88276355652'),
+('kar03', 3, 1, '1234', 'Karyawan Toko 1.3', 'Jl. ini no 3', '87791882736'),
+('kar04', 3, 3, '1234', 'Karyawan Toko 2.1', 'Jl. itu no 1', '83847765652'),
+('kar05', 3, 3, '1234', 'Karyawan Toko 2.2', 'Jl. itu no 2', '87928375652'),
+('kar06', 3, 3, '1234', 'Karyawan Toko 2.3', 'Jl. itu no 3', '88278295652'),
+('kar07', 3, 3, '1234', 'Karyawan Toko 2.4', 'Jl. itu no 4', '12972825652'),
+('kar08', 3, 3, '1234', 'Karyawan Toko 2.5', 'Jl. itu no 5', '82982728922'),
+('karya123', 3, 1, '321karya', 'Karyawan', 'Jl. Pandegiling', '08189912376'),
+('ownertbrk', 1, 1, 'tbrkowner', 'Owner', 'Jl. Babatan Pilang', '08112345678'),
+('suptbrk', 2, 1, 'tbrksup', 'Sup manukan', 'Jl. Banyu Urip', '081987654321'),
+('suptbrk2', 2, 3, 'tbrksup2', 'Sup wonorejo', 'Jl. Gayungan', '0821212457');
 
--- Dumping structure for table dbtbrk.kriteria
-DROP TABLE IF EXISTS `kriteria`;
-CREATE TABLE IF NOT EXISTS `kriteria` (
-  `id_kriteria` int(11) NOT NULL AUTO_INCREMENT,
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `kriteria`
+--
+
+CREATE TABLE `kriteria` (
+  `id_kriteria` int(11) NOT NULL,
   `nama_kriteria` varchar(200) DEFAULT NULL,
-  `bobot` double DEFAULT NULL,
-  PRIMARY KEY (`id_kriteria`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4;
+  `bobot` double DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Dumping data for table dbtbrk.kriteria: ~10 rows (approximately)
-/*!40000 ALTER TABLE `kriteria` DISABLE KEYS */;
+--
+-- Dumping data untuk tabel `kriteria`
+--
+
 INSERT INTO `kriteria` (`id_kriteria`, `nama_kriteria`, `bobot`) VALUES
-	(1, 'Efisiensi', 10),
-	(2, 'Kepedulian', 10),
-	(3, 'Keantusiasan', 10),
-	(4, 'Salam (Greeting)', 10),
-	(5, 'Etika (Attitude)', 10),
-	(6, 'Estimasi', 10),
-	(7, 'Kejujuran', 10),
-	(8, 'Kelengkapan  (Uniform)', 10),
-	(9, 'Kerja sama', 10),
-	(10, 'Passion', 10);
-/*!40000 ALTER TABLE `kriteria` ENABLE KEYS */;
+(1, 'Efisiensi', 10),
+(2, 'Kepedulian', 10),
+(3, 'Keantusiasan', 10),
+(4, 'Salam (Greeting)', 10),
+(5, 'Etika (Attitude)', 10),
+(6, 'Estimasi', 10),
+(7, 'Kejujuran', 10),
+(8, 'Kelengkapan  (Uniform)', 10),
+(9, 'Kerja sama', 10),
+(10, 'Passion', 10);
 
--- Dumping structure for table dbtbrk.penilai
-DROP TABLE IF EXISTS `penilai`;
-CREATE TABLE IF NOT EXISTS `penilai` (
-  `id_penilai` int(11) NOT NULL AUTO_INCREMENT,
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `penilai`
+--
+
+CREATE TABLE `penilai` (
+  `id_penilai` int(11) NOT NULL,
   `id_periode` int(11) NOT NULL,
   `id_toko` int(11) NOT NULL,
   `grup` varchar(50) NOT NULL DEFAULT '',
-  `sts` char(1) NOT NULL DEFAULT '',
-  PRIMARY KEY (`id_penilai`),
-  KEY `id_periode` (`id_periode`),
-  KEY `id_toko` (`id_toko`),
-  CONSTRAINT `FK_penilai_toko` FOREIGN KEY (`id_toko`) REFERENCES `toko` (`id_toko`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `fk_per1` FOREIGN KEY (`id_periode`) REFERENCES `periode` (`id_periode`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=latin1;
+  `sts` char(1) NOT NULL DEFAULT ''
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Dumping data for table dbtbrk.penilai: ~4 rows (approximately)
-/*!40000 ALTER TABLE `penilai` DISABLE KEYS */;
+--
+-- Dumping data untuk tabel `penilai`
+--
+
 INSERT INTO `penilai` (`id_penilai`, `id_periode`, `id_toko`, `grup`, `sts`) VALUES
-	(27, 3, 1, 'grup131', '0'),
-	(28, 3, 1, 'grup132', '0'),
-	(29, 3, 3, 'grup331', '0'),
-	(30, 3, 3, 'grup332', '0');
-/*!40000 ALTER TABLE `penilai` ENABLE KEYS */;
+(31, 3, 1, 'grup131', '1'),
+(32, 3, 1, 'grup132', '1'),
+(33, 3, 3, 'grup331', '1'),
+(34, 3, 3, 'grup332', '1');
 
--- Dumping structure for table dbtbrk.penilaian
-DROP TABLE IF EXISTS `penilaian`;
-CREATE TABLE IF NOT EXISTS `penilaian` (
-  `id_penilaian` int(11) NOT NULL AUTO_INCREMENT,
-  `id_penilai_detail` int(11) NOT NULL DEFAULT 0,
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `penilaian`
+--
+
+CREATE TABLE `penilaian` (
+  `id_penilaian` int(11) NOT NULL,
+  `id_penilai_detail` int(11) NOT NULL DEFAULT '0',
   `id_sub_kriteria` int(11) NOT NULL,
-  `hasil_nilai` int(11) NOT NULL,
-  PRIMARY KEY (`id_penilaian`),
-  KEY `id_penilai_detail` (`id_penilai_detail`),
-  KEY `id_sub_kriteria` (`id_sub_kriteria`),
-  CONSTRAINT `FK_penilaian_data_penilaian_kinerja` FOREIGN KEY (`id_sub_kriteria`) REFERENCES `data_penilaian_kinerja` (`id_sub_kriteria`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `FK_penilaian_penilai_detail` FOREIGN KEY (`id_penilai_detail`) REFERENCES `penilai_detail` (`id_penilai_detail`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=145 DEFAULT CHARSET=latin1;
+  `hasil_nilai` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Dumping data for table dbtbrk.penilaian: ~108 rows (approximately)
-/*!40000 ALTER TABLE `penilaian` DISABLE KEYS */;
+--
+-- Dumping data untuk tabel `penilaian`
+--
+
 INSERT INTO `penilaian` (`id_penilaian`, `id_penilai_detail`, `id_sub_kriteria`, `hasil_nilai`) VALUES
-	(37, 70, 1, 4),
-	(38, 70, 2, 4),
-	(39, 70, 3, 4),
-	(40, 70, 4, 4),
-	(41, 70, 5, 4),
-	(42, 70, 6, 4),
-	(43, 70, 7, 4),
-	(44, 70, 8, 4),
-	(45, 70, 9, 4),
-	(46, 70, 10, 4),
-	(47, 70, 11, 4),
-	(48, 70, 12, 4),
-	(49, 70, 13, 4),
-	(50, 70, 14, 4),
-	(51, 70, 15, 4),
-	(52, 70, 16, 4),
-	(53, 70, 17, 4),
-	(54, 70, 18, 4),
-	(55, 72, 1, 4),
-	(56, 72, 2, 4),
-	(57, 72, 3, 4),
-	(58, 72, 4, 4),
-	(59, 72, 5, 4),
-	(60, 72, 6, 4),
-	(61, 72, 7, 4),
-	(62, 72, 8, 4),
-	(63, 72, 9, 4),
-	(64, 72, 10, 4),
-	(65, 72, 11, 4),
-	(66, 72, 12, 4),
-	(67, 72, 13, 4),
-	(68, 72, 14, 4),
-	(69, 72, 15, 4),
-	(70, 72, 16, 4),
-	(71, 72, 17, 4),
-	(72, 72, 18, 4),
-	(73, 69, 1, 4),
-	(74, 69, 2, 4),
-	(75, 69, 3, 4),
-	(76, 69, 4, 4),
-	(77, 69, 5, 4),
-	(78, 69, 6, 4),
-	(79, 69, 7, 4),
-	(80, 69, 8, 4),
-	(81, 69, 9, 4),
-	(82, 69, 10, 4),
-	(83, 69, 11, 4),
-	(84, 69, 12, 4),
-	(85, 69, 13, 4),
-	(86, 69, 14, 4),
-	(87, 69, 15, 4),
-	(88, 69, 16, 4),
-	(89, 69, 17, 4),
-	(90, 69, 18, 4),
-	(91, 71, 1, 4),
-	(92, 71, 2, 4),
-	(93, 71, 3, 4),
-	(94, 71, 4, 4),
-	(95, 71, 5, 4),
-	(96, 71, 6, 4),
-	(97, 71, 7, 4),
-	(98, 71, 8, 4),
-	(99, 71, 9, 4),
-	(100, 71, 10, 4),
-	(101, 71, 11, 4),
-	(102, 71, 12, 4),
-	(103, 71, 13, 4),
-	(104, 71, 14, 4),
-	(105, 71, 15, 4),
-	(106, 71, 16, 4),
-	(107, 71, 17, 4),
-	(108, 71, 18, 4),
-	(109, 73, 1, 3),
-	(110, 73, 2, 4),
-	(111, 73, 3, 3),
-	(112, 73, 4, 3),
-	(113, 73, 5, 3),
-	(114, 73, 6, 3),
-	(115, 73, 7, 3),
-	(116, 73, 8, 2),
-	(117, 73, 9, 2),
-	(118, 73, 10, 2),
-	(119, 73, 11, 2),
-	(120, 73, 12, 2),
-	(121, 73, 13, 2),
-	(122, 73, 14, 2),
-	(123, 73, 15, 2),
-	(124, 73, 16, 3),
-	(125, 73, 17, 3),
-	(126, 73, 18, 2),
-	(127, 74, 1, 3),
-	(128, 74, 2, 1),
-	(129, 74, 3, 1),
-	(130, 74, 4, 1),
-	(131, 74, 5, 1),
-	(132, 74, 6, 1),
-	(133, 74, 7, 1),
-	(134, 74, 8, 1),
-	(135, 74, 9, 1),
-	(136, 74, 10, 1),
-	(137, 74, 11, 1),
-	(138, 74, 12, 1),
-	(139, 74, 13, 1),
-	(140, 74, 14, 1),
-	(141, 74, 15, 1),
-	(142, 74, 16, 2),
-	(143, 74, 17, 2),
-	(144, 74, 18, 1);
-/*!40000 ALTER TABLE `penilaian` ENABLE KEYS */;
+(307, 101, 1, 3),
+(308, 101, 2, 2),
+(309, 101, 3, 2),
+(310, 101, 4, 3),
+(311, 101, 5, 3),
+(312, 101, 6, 3),
+(313, 101, 7, 3),
+(314, 101, 8, 3),
+(315, 101, 9, 3),
+(316, 101, 10, 3),
+(317, 101, 11, 3),
+(318, 101, 12, 3),
+(319, 101, 13, 2),
+(320, 101, 14, 3),
+(321, 101, 15, 3),
+(322, 101, 16, 3),
+(323, 101, 17, 3),
+(324, 101, 18, 2),
+(325, 102, 1, 2),
+(326, 102, 2, 2),
+(327, 102, 3, 2),
+(328, 102, 4, 2),
+(329, 102, 5, 2),
+(330, 102, 6, 2),
+(331, 102, 7, 2),
+(332, 102, 8, 2),
+(333, 102, 9, 2),
+(334, 102, 10, 2),
+(335, 102, 11, 2),
+(336, 102, 12, 2),
+(337, 102, 13, 2),
+(338, 102, 14, 2),
+(339, 102, 15, 3),
+(340, 102, 16, 3),
+(341, 102, 17, 3),
+(342, 102, 18, 2),
+(343, 103, 1, 2),
+(344, 103, 2, 2),
+(345, 103, 3, 2),
+(346, 103, 4, 2),
+(347, 103, 5, 2),
+(348, 103, 6, 2),
+(349, 103, 7, 2),
+(350, 103, 8, 2),
+(351, 103, 9, 2),
+(352, 103, 10, 3),
+(353, 103, 11, 2),
+(354, 103, 12, 4),
+(355, 103, 13, 3),
+(356, 103, 14, 3),
+(357, 103, 15, 3),
+(358, 103, 16, 3),
+(359, 103, 17, 2),
+(360, 103, 18, 4),
+(361, 104, 1, 4),
+(362, 104, 2, 4),
+(363, 104, 3, 4),
+(364, 104, 4, 4),
+(365, 104, 5, 4),
+(366, 104, 6, 4),
+(367, 104, 7, 4),
+(368, 104, 8, 4),
+(369, 104, 9, 4),
+(370, 104, 10, 4),
+(371, 104, 11, 4),
+(372, 104, 12, 4),
+(373, 104, 13, 4),
+(374, 104, 14, 4),
+(375, 104, 15, 4),
+(376, 104, 16, 4),
+(377, 104, 17, 4),
+(378, 104, 18, 4),
+(379, 105, 1, 4),
+(380, 105, 2, 4),
+(381, 105, 3, 4),
+(382, 105, 4, 4),
+(383, 105, 5, 4),
+(384, 105, 6, 4),
+(385, 105, 7, 4),
+(386, 105, 8, 4),
+(387, 105, 9, 4),
+(388, 105, 10, 4),
+(389, 105, 11, 4),
+(390, 105, 12, 4),
+(391, 105, 13, 4),
+(392, 105, 14, 4),
+(393, 105, 15, 4),
+(394, 105, 16, 4),
+(395, 105, 17, 4),
+(396, 105, 18, 4),
+(397, 106, 1, 1),
+(398, 106, 2, 1),
+(399, 106, 3, 1),
+(400, 106, 4, 1),
+(401, 106, 5, 1),
+(402, 106, 6, 1),
+(403, 106, 7, 1),
+(404, 106, 8, 1),
+(405, 106, 9, 1),
+(406, 106, 10, 1),
+(407, 106, 11, 1),
+(408, 106, 12, 1),
+(409, 106, 13, 1),
+(410, 106, 14, 1),
+(411, 106, 15, 1),
+(412, 106, 16, 1),
+(413, 106, 17, 1),
+(414, 106, 18, 1),
+(415, 107, 1, 3),
+(416, 107, 2, 3),
+(417, 107, 3, 3),
+(418, 107, 4, 2),
+(419, 107, 5, 3),
+(420, 107, 6, 2),
+(421, 107, 7, 3),
+(422, 107, 8, 3),
+(423, 107, 9, 2),
+(424, 107, 10, 3),
+(425, 107, 11, 2),
+(426, 107, 12, 3),
+(427, 107, 13, 3),
+(428, 107, 14, 2),
+(429, 107, 15, 2),
+(430, 107, 16, 2),
+(431, 107, 17, 2),
+(432, 107, 18, 3),
+(433, 108, 1, 1),
+(434, 108, 2, 1),
+(435, 108, 3, 2),
+(436, 108, 4, 2),
+(437, 108, 5, 2),
+(438, 108, 6, 2),
+(439, 108, 7, 2),
+(440, 108, 8, 2),
+(441, 108, 9, 2),
+(442, 108, 10, 2),
+(443, 108, 11, 2),
+(444, 108, 12, 2),
+(445, 108, 13, 2),
+(446, 108, 14, 2),
+(447, 108, 15, 2),
+(448, 108, 16, 2),
+(449, 108, 17, 2),
+(450, 108, 18, 2),
+(451, 109, 1, 2),
+(452, 109, 2, 2),
+(453, 109, 3, 2),
+(454, 109, 4, 2),
+(455, 109, 5, 2),
+(456, 109, 6, 2),
+(457, 109, 7, 2),
+(458, 109, 8, 2),
+(459, 109, 9, 2),
+(460, 109, 10, 2),
+(461, 109, 11, 2),
+(462, 109, 12, 2),
+(463, 109, 13, 2),
+(464, 109, 14, 2),
+(465, 109, 15, 2),
+(466, 109, 16, 2),
+(467, 109, 17, 2),
+(468, 109, 18, 2),
+(469, 110, 1, 2),
+(470, 110, 2, 2),
+(471, 110, 3, 2),
+(472, 110, 4, 2),
+(473, 110, 5, 2),
+(474, 110, 6, 2),
+(475, 110, 7, 2),
+(476, 110, 8, 2),
+(477, 110, 9, 2),
+(478, 110, 10, 2),
+(479, 110, 11, 2),
+(480, 110, 12, 2),
+(481, 110, 13, 2),
+(482, 110, 14, 2),
+(483, 110, 15, 2),
+(484, 110, 16, 2),
+(485, 110, 17, 2),
+(486, 110, 18, 2);
 
--- Dumping structure for table dbtbrk.penilai_detail
-DROP TABLE IF EXISTS `penilai_detail`;
-CREATE TABLE IF NOT EXISTS `penilai_detail` (
-  `id_penilai_detail` int(11) NOT NULL AUTO_INCREMENT,
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `penilai_detail`
+--
+
+CREATE TABLE `penilai_detail` (
+  `id_penilai_detail` int(11) NOT NULL,
   `id_grup` int(11) NOT NULL,
-  `id_kar` varchar(12) CHARACTER SET latin1 NOT NULL,
-  PRIMARY KEY (`id_penilai_detail`),
-  KEY `id_kar` (`id_kar`),
-  KEY `id_grup` (`id_grup`),
-  CONSTRAINT `FK_penilai_detail_grup_dinilai` FOREIGN KEY (`id_grup`) REFERENCES `grup_dinilai` (`id_grup`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `FK_penilai_detail_karyawan` FOREIGN KEY (`id_kar`) REFERENCES `karyawan` (`id_kar`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=101 DEFAULT CHARSET=utf8mb4;
+  `id_kar` varchar(12) CHARACTER SET latin1 NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Dumping data for table dbtbrk.penilai_detail: ~20 rows (approximately)
-/*!40000 ALTER TABLE `penilai_detail` DISABLE KEYS */;
+--
+-- Dumping data untuk tabel `penilai_detail`
+--
+
 INSERT INTO `penilai_detail` (`id_penilai_detail`, `id_grup`, `id_kar`) VALUES
-	(69, 57, 'suptbrk'),
-	(70, 57, 'ownertbrk'),
-	(71, 58, 'suptbrk'),
-	(72, 58, 'ownertbrk'),
-	(73, 59, 'suptbrk'),
-	(74, 59, 'ownertbrk'),
-	(75, 60, 'suptbrk'),
-	(76, 60, 'ownertbrk'),
-	(89, 67, 'suptbrk'),
-	(90, 67, 'ownertbrk'),
-	(91, 68, 'suptbrk'),
-	(92, 68, 'ownertbrk'),
-	(93, 69, 'suptbrk'),
-	(94, 69, 'ownertbrk'),
-	(95, 70, 'suptbrk'),
-	(96, 70, 'ownertbrk'),
-	(97, 71, 'suptbrk'),
-	(98, 71, 'ownertbrk'),
-	(99, 72, 'suptbrk'),
-	(100, 72, 'ownertbrk');
-/*!40000 ALTER TABLE `penilai_detail` ENABLE KEYS */;
+(101, 73, 'suptbrk'),
+(102, 74, 'suptbrk'),
+(103, 75, 'suptbrk'),
+(104, 76, 'suptbrk'),
+(105, 77, 'suptbrk2'),
+(106, 78, 'suptbrk2'),
+(107, 79, 'suptbrk2'),
+(108, 80, 'suptbrk2'),
+(109, 81, 'suptbrk2'),
+(110, 82, 'suptbrk2');
 
--- Dumping structure for table dbtbrk.periode
-DROP TABLE IF EXISTS `periode`;
-CREATE TABLE IF NOT EXISTS `periode` (
-  `id_periode` int(11) NOT NULL AUTO_INCREMENT,
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `periode`
+--
+
+CREATE TABLE `periode` (
+  `id_periode` int(11) NOT NULL,
   `tahun` varchar(50) NOT NULL,
   `bulan` varchar(50) NOT NULL,
   `pekan` varchar(50) NOT NULL,
-  `status_periode` int(11) NOT NULL,
-  PRIMARY KEY (`id_periode`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+  `status_periode` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Dumping data for table dbtbrk.periode: ~3 rows (approximately)
-/*!40000 ALTER TABLE `periode` DISABLE KEYS */;
+--
+-- Dumping data untuk tabel `periode`
+--
+
 INSERT INTO `periode` (`id_periode`, `tahun`, `bulan`, `pekan`, `status_periode`) VALUES
-	(1, '2020', '11', '2', 0),
-	(2, '2020', '11', '4', 0),
-	(3, '2020', '12', '2', 1);
-/*!40000 ALTER TABLE `periode` ENABLE KEYS */;
+(1, '2020', '11', '2', 0),
+(2, '2020', '11', '4', 0),
+(3, '2020', '12', '2', 1);
 
--- Dumping structure for table dbtbrk.presensi
-DROP TABLE IF EXISTS `presensi`;
-CREATE TABLE IF NOT EXISTS `presensi` (
-  `id_pres` int(11) NOT NULL AUTO_INCREMENT,
-  `id_periode` int(11) NOT NULL DEFAULT 0,
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `presensi`
+--
+
+CREATE TABLE `presensi` (
+  `id_pres` int(11) NOT NULL,
+  `id_periode` int(11) NOT NULL DEFAULT '0',
   `id_kar` varchar(12) NOT NULL,
-  `jml_masuk` int(11) NOT NULL,
-  PRIMARY KEY (`id_pres`),
-  KEY `id_kar` (`id_kar`),
-  KEY `id_periode` (`id_periode`),
-  CONSTRAINT `FK_presensi_periode` FOREIGN KEY (`id_periode`) REFERENCES `periode` (`id_periode`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `fk_kar2` FOREIGN KEY (`id_kar`) REFERENCES `karyawan` (`id_kar`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=latin1;
+  `jml_masuk` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Dumping data for table dbtbrk.presensi: ~13 rows (approximately)
-/*!40000 ALTER TABLE `presensi` DISABLE KEYS */;
+--
+-- Dumping data untuk tabel `presensi`
+--
+
 INSERT INTO `presensi` (`id_pres`, `id_periode`, `id_kar`, `jml_masuk`) VALUES
-	(2, 2, 'karya123', 12),
-	(7, 2, 'adhit123', 12),
-	(12, 2, 'kar01', 12),
-	(13, 2, 'kar02', 12),
-	(17, 2, 'kar04', 12),
-	(18, 2, 'kar05', 12),
-	(19, 2, 'kar06', 12),
-	(20, 2, 'kar07', 12),
-	(21, 2, 'kar08', 12),
-	(22, 2, 'kar03', 12),
-	(23, 3, 'kar01', 12),
-	(24, 3, 'kar02', 12),
-	(25, 3, 'kar03', 12),
-	(26, 3, 'karya123', 12);
-/*!40000 ALTER TABLE `presensi` ENABLE KEYS */;
+(2, 2, 'karya123', 12),
+(7, 2, 'adhit123', 12),
+(12, 2, 'kar01', 12),
+(13, 2, 'kar02', 12),
+(17, 2, 'kar04', 12),
+(18, 2, 'kar05', 12),
+(19, 2, 'kar06', 12),
+(20, 2, 'kar07', 12),
+(21, 2, 'kar08', 12),
+(22, 2, 'kar03', 12),
+(23, 3, 'kar01', 12),
+(24, 3, 'kar02', 12),
+(25, 3, 'kar03', 12),
+(26, 3, 'karya123', 12),
+(27, 3, 'kar04', 12),
+(28, 3, 'adhit123', 12),
+(29, 3, 'kar05', 12),
+(30, 3, 'kar06', 12),
+(31, 3, 'kar07', 12),
+(32, 3, 'kar08', 12);
 
--- Dumping structure for table dbtbrk.toko
-DROP TABLE IF EXISTS `toko`;
-CREATE TABLE IF NOT EXISTS `toko` (
-  `id_toko` int(11) NOT NULL AUTO_INCREMENT,
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `toko`
+--
+
+CREATE TABLE `toko` (
+  `id_toko` int(11) NOT NULL,
   `lokasi` varchar(50) NOT NULL,
-  `setting_jml` varchar(50) NOT NULL,
-  PRIMARY KEY (`id_toko`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+  `setting_jml` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Dumping data for table dbtbrk.toko: ~2 rows (approximately)
-/*!40000 ALTER TABLE `toko` DISABLE KEYS */;
+--
+-- Dumping data untuk tabel `toko`
+--
+
 INSERT INTO `toko` (`id_toko`, `lokasi`, `setting_jml`) VALUES
-	(1, 'Jl. Manukan Dalam No.12', '2'),
-	(3, 'Jl. Wonorejo IV', '3');
-/*!40000 ALTER TABLE `toko` ENABLE KEYS */;
+(1, 'Jl. Manukan Dalam No.12', '2'),
+(3, 'Jl. Wonorejo IV', '3');
 
-/*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
-/*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `data_penilaian_kinerja`
+--
+ALTER TABLE `data_penilaian_kinerja`
+  ADD PRIMARY KEY (`id_sub_kriteria`) USING BTREE,
+  ADD KEY `id_kriteria` (`id_kriteria`);
+
+--
+-- Indexes for table `grup_dinilai`
+--
+ALTER TABLE `grup_dinilai`
+  ADD PRIMARY KEY (`id_grup`),
+  ADD KEY `id_penilai` (`id_penilai`),
+  ADD KEY `id_kar` (`id_kar`);
+
+--
+-- Indexes for table `jabatan`
+--
+ALTER TABLE `jabatan`
+  ADD PRIMARY KEY (`id_jabatan`);
+
+--
+-- Indexes for table `karyawan`
+--
+ALTER TABLE `karyawan`
+  ADD PRIMARY KEY (`id_kar`),
+  ADD KEY `id_jabatan` (`id_jabatan`),
+  ADD KEY `id_toko` (`id_toko`);
+
+--
+-- Indexes for table `kriteria`
+--
+ALTER TABLE `kriteria`
+  ADD PRIMARY KEY (`id_kriteria`);
+
+--
+-- Indexes for table `penilai`
+--
+ALTER TABLE `penilai`
+  ADD PRIMARY KEY (`id_penilai`),
+  ADD KEY `id_periode` (`id_periode`),
+  ADD KEY `id_toko` (`id_toko`);
+
+--
+-- Indexes for table `penilaian`
+--
+ALTER TABLE `penilaian`
+  ADD PRIMARY KEY (`id_penilaian`),
+  ADD KEY `id_penilai_detail` (`id_penilai_detail`),
+  ADD KEY `id_sub_kriteria` (`id_sub_kriteria`);
+
+--
+-- Indexes for table `penilai_detail`
+--
+ALTER TABLE `penilai_detail`
+  ADD PRIMARY KEY (`id_penilai_detail`),
+  ADD KEY `id_kar` (`id_kar`),
+  ADD KEY `id_grup` (`id_grup`);
+
+--
+-- Indexes for table `periode`
+--
+ALTER TABLE `periode`
+  ADD PRIMARY KEY (`id_periode`);
+
+--
+-- Indexes for table `presensi`
+--
+ALTER TABLE `presensi`
+  ADD PRIMARY KEY (`id_pres`),
+  ADD KEY `id_kar` (`id_kar`),
+  ADD KEY `id_periode` (`id_periode`);
+
+--
+-- Indexes for table `toko`
+--
+ALTER TABLE `toko`
+  ADD PRIMARY KEY (`id_toko`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `data_penilaian_kinerja`
+--
+ALTER TABLE `data_penilaian_kinerja`
+  MODIFY `id_sub_kriteria` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+--
+-- AUTO_INCREMENT for table `grup_dinilai`
+--
+ALTER TABLE `grup_dinilai`
+  MODIFY `id_grup` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=83;
+--
+-- AUTO_INCREMENT for table `jabatan`
+--
+ALTER TABLE `jabatan`
+  MODIFY `id_jabatan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+--
+-- AUTO_INCREMENT for table `kriteria`
+--
+ALTER TABLE `kriteria`
+  MODIFY `id_kriteria` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+--
+-- AUTO_INCREMENT for table `penilai`
+--
+ALTER TABLE `penilai`
+  MODIFY `id_penilai` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+--
+-- AUTO_INCREMENT for table `penilaian`
+--
+ALTER TABLE `penilaian`
+  MODIFY `id_penilaian` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=487;
+--
+-- AUTO_INCREMENT for table `penilai_detail`
+--
+ALTER TABLE `penilai_detail`
+  MODIFY `id_penilai_detail` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=111;
+--
+-- AUTO_INCREMENT for table `periode`
+--
+ALTER TABLE `periode`
+  MODIFY `id_periode` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+--
+-- AUTO_INCREMENT for table `presensi`
+--
+ALTER TABLE `presensi`
+  MODIFY `id_pres` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+--
+-- AUTO_INCREMENT for table `toko`
+--
+ALTER TABLE `toko`
+  MODIFY `id_toko` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+--
+-- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)
+--
+
+--
+-- Ketidakleluasaan untuk tabel `data_penilaian_kinerja`
+--
+ALTER TABLE `data_penilaian_kinerja`
+  ADD CONSTRAINT `FK_data_penilaian_kinerja_kriteria` FOREIGN KEY (`id_kriteria`) REFERENCES `kriteria` (`id_kriteria`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Ketidakleluasaan untuk tabel `grup_dinilai`
+--
+ALTER TABLE `grup_dinilai`
+  ADD CONSTRAINT `FK_grup_dinilai_karyawan` FOREIGN KEY (`id_kar`) REFERENCES `karyawan` (`id_kar`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `FK_grup_penilai_penilai` FOREIGN KEY (`id_penilai`) REFERENCES `penilai` (`id_penilai`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Ketidakleluasaan untuk tabel `karyawan`
+--
+ALTER TABLE `karyawan`
+  ADD CONSTRAINT `fk_jab1` FOREIGN KEY (`id_jabatan`) REFERENCES `jabatan` (`id_jabatan`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_toko1` FOREIGN KEY (`id_toko`) REFERENCES `toko` (`id_toko`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Ketidakleluasaan untuk tabel `penilai`
+--
+ALTER TABLE `penilai`
+  ADD CONSTRAINT `FK_penilai_toko` FOREIGN KEY (`id_toko`) REFERENCES `toko` (`id_toko`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_per1` FOREIGN KEY (`id_periode`) REFERENCES `periode` (`id_periode`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Ketidakleluasaan untuk tabel `penilaian`
+--
+ALTER TABLE `penilaian`
+  ADD CONSTRAINT `FK_penilaian_data_penilaian_kinerja` FOREIGN KEY (`id_sub_kriteria`) REFERENCES `data_penilaian_kinerja` (`id_sub_kriteria`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `FK_penilaian_penilai_detail` FOREIGN KEY (`id_penilai_detail`) REFERENCES `penilai_detail` (`id_penilai_detail`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Ketidakleluasaan untuk tabel `penilai_detail`
+--
+ALTER TABLE `penilai_detail`
+  ADD CONSTRAINT `FK_penilai_detail_grup_dinilai` FOREIGN KEY (`id_grup`) REFERENCES `grup_dinilai` (`id_grup`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `FK_penilai_detail_karyawan` FOREIGN KEY (`id_kar`) REFERENCES `karyawan` (`id_kar`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Ketidakleluasaan untuk tabel `presensi`
+--
+ALTER TABLE `presensi`
+  ADD CONSTRAINT `FK_presensi_periode` FOREIGN KEY (`id_periode`) REFERENCES `periode` (`id_periode`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_kar2` FOREIGN KEY (`id_kar`) REFERENCES `karyawan` (`id_kar`) ON DELETE CASCADE ON UPDATE CASCADE;
+
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

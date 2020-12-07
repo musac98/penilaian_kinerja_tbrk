@@ -54,6 +54,7 @@ if(isset($_GET['detail'])){
                 <?php
                         $i = 0;
                         $pen = new Penilian($con, $id_penilai, $id_periode);
+
                         $sql = "SELECT *,
                                 f.id_kar AS 'dinilai'
                                 FROM penilai_detail a 
@@ -147,6 +148,10 @@ if(isset($_GET['detail'])){
                     ?>
                     </tbody>
                     <tfoot>
+                        <tr>
+                            <th colspan="6">Total nilai individu</th>
+                            <th><?= $pen->get_tot_nilai_individu($id_kar); ?></th>
+                        </tr>
                         <tr>
                             <th colspan="6">Total</th>
                             <th><?= $pen->get_tot_nilai(); ?></th>
